@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escape the Maze</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <h1>Escape the Maze</h1>
+    <div id="hud">
+      <span>Level: <span class="value" id="levelDisplay">1</span> / 10</span>
+      <span>Enemies: <span class="value" id="enemyCount">2</span></span>
+    </div>
+    <canvas id="mazeCanvas"></canvas>
+    <p id="message">Use arrow keys or WASD to move. Reach the green exit!</p>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

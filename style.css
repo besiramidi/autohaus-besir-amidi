@@ -1,0 +1,67 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  color: #eee;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-container {
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: 2rem;
+  color: #e94560;
+}
+
+#hud {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+#hud span {
+  color: #a8a8b3;
+}
+
+#hud .value {
+  color: #e94560;
+  font-weight: bold;
+}
+
+canvas {
+  border: 3px solid #e94560;
+  background: #16213e;
+  display: block;
+  margin: 0 auto;
+}
+
+#message {
+  margin-top: 12px;
+  font-size: 1.1rem;
+  color: #a8a8b3;
+  min-height: 1.5em;
+}
+
+#message.win {
+  color: #53d769;
+  font-weight: bold;
+}
+
+#message.lose {
+  color: #e94560;
+  font-weight: bold;
+}
