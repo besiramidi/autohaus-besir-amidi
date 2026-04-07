@@ -311,6 +311,15 @@
     </div>
   </div>
 
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-arrow left" onclick="event.stopPropagation(); lightboxPrev()">‹</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+    <button class="lightbox-arrow right" onclick="event.stopPropagation(); lightboxNext()">›</button>
+    <span class="lightbox-counter" id="lightboxCounter"></span>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 

@@ -458,7 +458,7 @@ function openModal(id) {
     <!-- GALLERY -->
     <div class="modal-gallery">
       <div class="gallery-main" id="galleryMain">
-        <img src="${encodePath(car.images[0])}" alt="${car.name}" id="galleryMainImg" />
+        <img src="${encodePath(car.images[0])}" alt="${car.name}" id="galleryMainImg" onclick="openLightbox()" />
         <button class="gallery-arrow left" onclick="galleryPrev()">‹</button>
         <button class="gallery-arrow right" onclick="galleryNext()">›</button>
         <span class="gallery-counter" id="galleryCounter">1 / ${car.images.length}</span>
@@ -536,16 +536,56 @@ function galleryPrev() {
 }
 
 function closeModal() {
+  closeLightbox();
   document.getElementById("modalOverlay").classList.remove("open");
   document.body.style.overflow = "";
   currentGalleryCar = null;
 }
 
 document.addEventListener("keydown", e => {
+  if (document.getElementById("lightbox").classList.contains("open")) {
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowRight") lightboxNext();
+    if (e.key === "ArrowLeft") lightboxPrev();
+    return;
+  }
   if (e.key === "Escape") closeModal();
   if (e.key === "ArrowRight") galleryNext();
   if (e.key === "ArrowLeft") galleryPrev();
 });
+
+// ===== LIGHTBOX =====
+function openLightbox() {
+  if (!currentGalleryCar) return;
+  const lb = document.getElementById("lightbox");
+  document.getElementById("lightboxImg").src = encodePath(currentGalleryCar.images[currentGalleryIndex]);
+  document.getElementById("lightboxCounter").textContent =
+    `${currentGalleryIndex + 1} / ${currentGalleryCar.images.length}`;
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("open");
+}
+
+function lightboxNext() {
+  if (!currentGalleryCar) return;
+  const next = (currentGalleryIndex + 1) % currentGalleryCar.images.length;
+  setGalleryImage(next);
+  document.getElementById("lightboxImg").src = encodePath(currentGalleryCar.images[next]);
+  document.getElementById("lightboxCounter").textContent =
+    `${next + 1} / ${currentGalleryCar.images.length}`;
+}
+
+function lightboxPrev() {
+  if (!currentGalleryCar) return;
+  const prev = (currentGalleryIndex - 1 + currentGalleryCar.images.length) % currentGalleryCar.images.length;
+  setGalleryImage(prev);
+  document.getElementById("lightboxImg").src = encodePath(currentGalleryCar.images[prev]);
+  document.getElementById("lightboxCounter").textContent =
+    `${prev + 1} / ${currentGalleryCar.images.length}`;
+}
 
 // ===== CONTACT =====
 function contactCar(carName) {

@@ -2,6 +2,17 @@
 
 ---
 
+## Update 4 — Fullscreen Image Lightbox
+
+- Clicking the main gallery image in any car modal now opens a fullscreen lightbox
+- Dark overlay covers the entire screen with the image displayed large
+- Left / right arrows to navigate between all photos in fullscreen
+- ✕ button to close, or click anywhere on the dark background
+- Keyboard support: ← → arrows to navigate, Escape to close
+- Gallery image shows a zoom cursor to hint it's clickable
+
+---
+
 ## Update 3 — Real Car Listings with Photos & Brand Filters
 
 - Hero background replaced with real showroom photo from mobile folder
