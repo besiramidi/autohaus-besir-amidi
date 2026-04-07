@@ -1,189 +1,281 @@
+// ===== MAKES & MODELS MAP =====
+const makesModels = {
+  "Mercedes Benz": ["E Klasse"],
+  "Audi":          ["A4", "A6"],
+  "BMW":           ["5er"],
+  "Volkswagen":    ["Golf 6"]
+};
+
 // ===== CAR DATA =====
 const cars = [
   {
     id: 1,
-    name: "BMW X5 xDrive40i",
-    make: "BMW",
-    type: "SUV",
-    year: 2022,
-    price: 62500,
-    oldPrice: 68000,
-    mileage: "18,400 mi",
-    fuel: "Gasoline",
-    transmission: "Automatic",
-    engine: "3.0L Turbo I6",
-    color: "Alpine White",
+    name: "Mercedes-Benz E 220 d",
+    make: "Mercedes Benz",
+    model: "E Klasse",
+    year: 2017,
+    km: "156.000 km",
+    power: "143 kW (194 PS)",
+    fuel: "Diesel",
+    transmission: "Automatik",
+    engine: "1.950 cm³ · 4 Zyl.",
+    series: "W213",
+    line: "E 220 d",
+    color: "Obsidianschwarz Metallic",
+    interior: "Vollleder, Braun",
     seats: 5,
-    status: "certified",
-    emoji: "🚙",
-    bg: "#e8f4fd",
-    description: "Immaculate BMW X5 in Alpine White. Loaded with premium features including panoramic roof, Harman Kardon sound, heated/cooled seats, and the latest BMW Live Cockpit Professional. Full service history available."
+    doors: "4/5",
+    eu: "Euro 6",
+    consumption: "3,9 l/100km",
+    co2: "102 g/km",
+    weight: "1.680 kg",
+    towing: "2.100 kg",
+    hu: "Neu",
+    owners: 2,
+    condition: "Gebrauchtfahrzeug, Unfallfrei",
+    status: "used",
+    thumb: "images/mercedes/e-klasse/09550ef5-712b-461e-9afc-c4f33ae21846.avif",
+    images: [
+      "images/mercedes/e-klasse/09550ef5-712b-461e-9afc-c4f33ae21846.avif",
+      "images/mercedes/e-klasse/1216e9a1-5a00-4bc8-b7ac-6e67a76bdda3 (1).avif",
+      "images/mercedes/e-klasse/25c1357b-21b1-4d7a-9c48-fc52ae651969.avif",
+      "images/mercedes/e-klasse/55244e1a-23cb-41d3-ac3e-c00b9717014d.avif",
+      "images/mercedes/e-klasse/70281457-f102-477b-9c0b-d14191f44bd1.avif",
+      "images/mercedes/e-klasse/835970b5-4516-4ec3-a414-1ea9ab8a9ad3.avif",
+      "images/mercedes/e-klasse/88b6dd42-eecd-4815-bc6a-378cce6e7f71.avif",
+      "images/mercedes/e-klasse/a2f45885-e5b9-414c-9c8b-e181276db127.avif",
+      "images/mercedes/e-klasse/b3e1a558-d7f7-4135-866a-9512e253499b.avif",
+      "images/mercedes/e-klasse/b4d5c7b8-f22d-4916-aa7d-9013a126d5ad (1).avif",
+      "images/mercedes/e-klasse/b6897644-91cd-42a2-ab93-dea2b8eba429.avif",
+      "images/mercedes/e-klasse/bb45186c-8b38-4f34-82fb-f69b5cf0d974.avif",
+      "images/mercedes/e-klasse/cd6c2264-b133-4a25-95d3-0836b299a891.avif",
+      "images/mercedes/e-klasse/fcacad04-d622-40b7-9aee-d150d1c19604.avif",
+      "images/mercedes/e-klasse/fe639c2c-5ea4-4077-813f-44d92b60f05b.avif",
+      "images/mercedes/e-klasse/fe98da4c-3ccd-42d5-a41b-e1bbd7ac2b2e (1).avif"
+    ],
+    features: [
+      "Head-Up Display","Navigationssystem","Apple CarPlay","Schiebedach",
+      "Luftfederung","Sitzheizung","Sitzbelüftung","Elektr. Sitzeinstellung",
+      "Klimaautomatik","Ambiente-Beleuchtung","Xenonscheinwerfer",
+      "Einparkhilfe vorne & hinten","Kamera","Spurhalteassistent",
+      "Notbremsassistent","Verkehrszeichenerkennung","Müdigkeitswarner",
+      "Bluetooth","Lederlenkrad","Leichtmetallfelgen","Scheckheftgepflegt"
+    ]
   },
   {
     id: 2,
-    name: "Tesla Model 3 Long Range",
-    make: "Tesla",
-    type: "Electric",
-    year: 2023,
-    price: 44900,
-    oldPrice: null,
-    mileage: "9,200 mi",
-    fuel: "Electric",
-    transmission: "Single-speed",
-    engine: "Dual Motor AWD",
-    color: "Midnight Silver",
+    name: "Audi A4",
+    make: "Audi",
+    model: "A4",
+    year: null,
+    km: "Auf Anfrage",
+    power: "Auf Anfrage",
+    fuel: "Benzin",
+    transmission: "Automatik",
+    engine: "—",
+    series: "—",
+    line: "A4",
+    color: "—",
+    interior: "—",
     seats: 5,
-    status: "new",
-    emoji: "⚡",
-    bg: "#e8f5e9",
-    description: "Nearly new Tesla Model 3 Long Range AWD. 358-mile EPA range, autopilot included, premium interior, glass roof. Full self-driving capability hardware. 8-year battery warranty remaining."
+    doors: "4/5",
+    eu: "—",
+    consumption: "—",
+    co2: "—",
+    weight: "—",
+    towing: "—",
+    hu: "—",
+    owners: null,
+    condition: "Gebrauchtfahrzeug",
+    status: "used",
+    thumb: "images/audi/a4/2f111515-04ec-4104-aa01-64b21e7d53bd.avif",
+    images: [
+      "images/audi/a4/2f111515-04ec-4104-aa01-64b21e7d53bd.avif",
+      "images/audi/a4/2f9f9a71-8d89-43cd-9615-91b19f8c2fde.avif",
+      "images/audi/a4/43e75fca-f039-4cf1-925b-1fc41569ba59.avif",
+      "images/audi/a4/58cf1e28-7523-41bd-9f8b-898dc6a499dd.avif",
+      "images/audi/a4/68757ee8-b399-482b-b4c2-376311b53e5b.avif",
+      "images/audi/a4/808aa5df-c038-4d70-a8f8-665522886f29.avif",
+      "images/audi/a4/8d348402-5b6a-40d6-91b8-8f28dbb56449.avif",
+      "images/audi/a4/90739111-8553-4c8b-ba53-fd62f9813e55.avif",
+      "images/audi/a4/ac47deaf-5a5e-4ad8-82ed-d2182c3eb149.avif",
+      "images/audi/a4/aed8f8ff-ae0a-49a0-a81f-6325fdbf90d2.avif",
+      "images/audi/a4/b6606b20-6876-4152-af29-437aafe2b08e.avif",
+      "images/audi/a4/be389bdd-3b02-430b-be14-4b7f66f1da4b.avif",
+      "images/audi/a4/ea484003-d466-4412-9f87-bd1ce66d067f.avif"
+    ],
+    features: ["Weitere Details auf Anfrage"]
   },
   {
     id: 3,
-    name: "Audi A4 quattro",
+    name: "Audi A6 sport 50 TFSI e quattro",
     make: "Audi",
-    type: "Sedan",
-    year: 2021,
-    price: 36800,
-    oldPrice: 41000,
-    mileage: "27,100 mi",
-    fuel: "Gasoline",
-    transmission: "S tronic 7-spd",
-    engine: "2.0L TFSI",
-    color: "Navarra Blue",
+    model: "A6",
+    year: 2022,
+    km: "54.408 km",
+    power: "220 kW (299 PS)",
+    fuel: "Hybrid",
+    transmission: "S tronic (Automatik)",
+    engine: "1.984 cm³ · 4 Zyl. + Elektro",
+    series: "F2X",
+    line: "sport 50 TFSI e quattro",
+    color: "Mythosschwarz Metallic",
+    interior: "Teilleder, Schwarz",
     seats: 5,
+    doors: "4/5",
+    eu: "Euro 6d",
+    consumption: "Plug-in-Hybrid",
+    co2: "—",
+    battery: "14 kWh · Typ 2",
+    weight: "2.085 kg",
+    towing: "2.000 kg",
+    hu: "Neu",
+    owners: 1,
+    condition: "Gebrauchtfahrzeug",
+    available: "Ab 07.04.2026",
     status: "certified",
-    emoji: "🏎️",
-    bg: "#e8eaf6",
-    description: "Stunning Audi A4 quattro in rare Navarra Blue. Features Virtual Cockpit, Bang & Olufsen sound system, adaptive cruise control, and quattro AWD. One owner, no accidents, fully serviced."
+    thumb: "images/audi/a6/0c2c868a-e5bd-4cc6-b093-c7adccb2cd3f.avif",
+    images: [
+      "images/audi/a6/0c2c868a-e5bd-4cc6-b093-c7adccb2cd3f.avif",
+      "images/audi/a6/48a6591c-69b9-4515-acbb-cfef3fa9424e.avif",
+      "images/audi/a6/5bcc58fb-7344-4285-8631-11f890ff6d13.avif",
+      "images/audi/a6/65836954-7d3b-42ec-be70-96298024d6b3.avif",
+      "images/audi/a6/6cd6a3b5-bf5d-4310-b6cd-376a31e3625a.avif",
+      "images/audi/a6/8448b1ba-77ed-4854-9901-7172342cad37.avif",
+      "images/audi/a6/84b150fd-56f3-43d9-8c00-94e80f31fb4e.avif",
+      "images/audi/a6/99f37dba-e954-4a8c-bbc5-8b795b0d3440.avif",
+      "images/audi/a6/b2f7911f-a7a5-480f-b0f0-a4e2a91ac5a5.avif",
+      "images/audi/a6/ce11989c-51f6-4b45-a0c0-b3da835352a9.avif",
+      "images/audi/a6/d3165887-cf17-4687-a44c-e74402fa2249.avif",
+      "images/audi/a6/d5e326b6-1c22-4443-a65a-5447add602b1.avif",
+      "images/audi/a6/dd895b7e-6283-4f12-a2da-b2ef3e725e71.avif",
+      "images/audi/a6/fef6449e-57c1-4e49-a147-3c5f63686748.avif"
+    ],
+    features: [
+      "Head-Up Display","Navigationssystem","4-Zonen-Klimaautomatik",
+      "Allradantrieb (quattro)","LED-Scheinwerfer","Volldigitales Kombiinstrument",
+      "Nachtsicht-Assistent","Totwinkel-Assistent","Fernlichtassistent",
+      "Spurhalteassistent","Notbremsassistent","Verkehrszeichenerkennung",
+      "Sitzheizung","Soundsystem","Sportpaket","Sportsitze","Schaltwippen",
+      "Sportfahrwerk","Elektr. Heckklappe","Bluetooth","Scheckheftgepflegt",
+      "Batteriezertifikat","Sommerreifen"
+    ]
   },
   {
     id: 4,
-    name: "Mercedes GLC 300",
-    make: "Mercedes",
-    type: "SUV",
-    year: 2022,
-    price: 58000,
-    oldPrice: 63500,
-    mileage: "14,700 mi",
-    fuel: "Gasoline",
-    transmission: "9G-Tronic",
-    engine: "2.0L Turbo",
-    color: "Obsidian Black",
+    name: "BMW M5 (F10)",
+    make: "BMW",
+    model: "5er",
+    year: 2013,
+    km: "96.875 km",
+    power: "330 kW (449 PS)",
+    fuel: "Benzin",
+    transmission: "Automatik",
+    engine: "4.395 cm³ · V8",
+    series: "F10",
+    line: "M5",
+    color: "Black Sapphire Metallic",
+    interior: "Vollleder, Schwarz",
     seats: 5,
-    status: "certified",
-    emoji: "🖤",
-    bg: "#f3e5f5",
-    description: "Pristine Mercedes GLC 300 4MATIC in Obsidian Black. AMG Line exterior, MBUX infotainment, 360° camera, Burmester sound, and heated front seats. Still under factory warranty."
+    doors: "4/5",
+    eu: "Euro 4 (Grün)",
+    consumption: "—",
+    co2: "—",
+    weight: "—",
+    towing: "—",
+    hu: "10/2027",
+    owners: 2,
+    condition: "Gebrauchtfahrzeug",
+    status: "used",
+    thumb: "images/bmw/5er/16fce453-48ee-49e9-a76f-48bd6fb73e78.avif",
+    images: [
+      "images/bmw/5er/16fce453-48ee-49e9-a76f-48bd6fb73e78.avif",
+      "images/bmw/5er/1d13184a-c1ba-482c-bdfc-b703016c8a9f.avif",
+      "images/bmw/5er/1e9105ac-aebd-4090-b458-f616a15f4db1.avif",
+      "images/bmw/5er/262e8327-829e-45b4-b824-6892f34f1465.avif",
+      "images/bmw/5er/2c325090-3e05-45b5-8d29-226a4849b18c.avif",
+      "images/bmw/5er/2f40df03-cd5f-41a8-bb33-2361d681c724.avif",
+      "images/bmw/5er/5217f285-26d7-4f22-a39c-9fc43e59b2df.avif",
+      "images/bmw/5er/7944ec4e-747d-45b0-877e-e7ce02b050fe.avif",
+      "images/bmw/5er/79f44a01-8b23-4f71-acbb-15a1e63c2dbe.avif",
+      "images/bmw/5er/b357f7f5-533a-47fa-8296-f34862b748ca.avif",
+      "images/bmw/5er/bc1e5853-312f-434d-9c22-7977c067abaa.avif",
+      "images/bmw/5er/d88545f8-b816-4543-9ebc-d3e2ce8c03ec.avif",
+      "images/bmw/5er/da462cb5-9412-411b-9885-c4e5e3bf3994.avif",
+      "images/bmw/5er/e8a2c691-7f25-4083-8c81-db8a9c77e001.avif",
+      "images/bmw/5er/ece5df12-189d-4085-ab56-04c4f5eb2675.avif",
+      "images/bmw/5er/fce610f6-2a56-4613-8a48-ae4ae8495953.avif",
+      "images/bmw/5er/fe4aeebc-1499-4c7f-b167-c8c3e7e63122.avif"
+    ],
+    features: [
+      "Head-Up Display","Navigationssystem","Allradantrieb","LED-Scheinwerfer",
+      "Abgedunkelte Scheiben","Schiebedach","Totwinkel-Assistent",
+      "Elektr. Sitzeinstellung mit Memory","Sitzheizung","Sitzheizung hinten",
+      "Beheizbares Lenkrad","Soundsystem","Sportpaket","Sportsitze","Schaltwippen",
+      "Alarmanlage","Abstandswarner","Müdigkeitswarner","Fernlichtassistent",
+      "Schlüssellose Zentralverriegelung","Volldigitales Kombiinstrument",
+      "Bluetooth","Scheckheftgepflegt","Nichtraucher-Fahrzeug","Sommerreifen"
+    ]
   },
   {
     id: 5,
-    name: "Toyota Tundra TRD Pro",
-    make: "Toyota",
-    type: "Truck",
-    year: 2022,
-    price: 57200,
-    oldPrice: null,
-    mileage: "22,900 mi",
-    fuel: "Hybrid",
-    transmission: "Automatic 10-spd",
-    engine: "3.5L Twin Turbo V6",
-    color: "Army Green",
+    name: "Volkswagen Golf 6 Variant",
+    make: "Volkswagen",
+    model: "Golf 6",
+    year: 2013,
+    km: "317.348 km",
+    power: "77 kW (105 PS)",
+    fuel: "Benzin",
+    transmission: "Schaltgetriebe",
+    engine: "—",
+    series: "Golf 6",
+    line: "Golf 6 Variant",
+    color: "Grey",
+    interior: "—",
     seats: 5,
+    doors: "5",
+    eu: "Euro 4 (Grün)",
+    consumption: "—",
+    co2: "—",
+    weight: "—",
+    towing: "—",
+    hu: "10/2026",
+    owners: null,
+    condition: "Gebrauchtfahrzeug",
     status: "used",
-    emoji: "🛻",
-    bg: "#e8f5e9",
-    description: "Powerful Toyota Tundra TRD Pro with i-FORCE MAX hybrid powertrain producing 437 HP. Features TRD FOX shocks, skid plates, Multi-terrain monitor, and towing capacity of 11,450 lbs."
-  },
-  {
-    id: 6,
-    name: "BMW M4 Competition",
-    make: "BMW",
-    type: "Coupe",
-    year: 2021,
-    price: 79900,
-    oldPrice: 88000,
-    mileage: "8,600 mi",
-    fuel: "Gasoline",
-    transmission: "M Steptronic 8-spd",
-    engine: "3.0L M TwinPower",
-    color: "Isle of Man Green",
-    seats: 4,
-    status: "certified",
-    emoji: "🟢",
-    bg: "#f1f8e9",
-    description: "Rare BMW M4 Competition in stunning Isle of Man Green. xDrive, carbon fibre roof, M carbon bucket seats, M Drive Professional, and track mode. Numbers matching, never tracked."
-  },
-  {
-    id: 7,
-    name: "Mercedes E350 AMG",
-    make: "Mercedes",
-    type: "Sedan",
-    year: 2020,
-    price: 39500,
-    oldPrice: 44000,
-    mileage: "35,200 mi",
-    fuel: "Gasoline",
-    transmission: "9G-Tronic",
-    engine: "2.0L EQ Boost",
-    color: "Selenite Grey",
-    seats: 5,
-    status: "used",
-    emoji: "🌫️",
-    bg: "#eceff1",
-    description: "Elegant Mercedes E350 AMG Line in Selenite Grey metallic. Features widescreen cockpit, night package, panoramic roof, and 48V EQ Boost mild hybrid system. Impeccably maintained."
-  },
-  {
-    id: 8,
-    name: "Ford Mustang GT500",
-    make: "Ford",
-    type: "Coupe",
-    year: 2022,
-    price: 81000,
-    oldPrice: null,
-    mileage: "4,300 mi",
-    fuel: "Gasoline",
-    transmission: "Tremec 7-spd",
-    engine: "5.2L Supercharged V8",
-    color: "Grabber Blue",
-    seats: 4,
-    status: "new",
-    emoji: "💙",
-    bg: "#e3f2fd",
-    description: "Iconic Ford Mustang Shelby GT500 in Grabber Blue. 760 HP supercharged V8, Carbon Fiber Track Pack, Brembo brakes, active exhaust, and MagneRide suspension. The most powerful street-legal Mustang ever."
-  },
-  {
-    id: 9,
-    name: "Toyota RAV4 Hybrid",
-    make: "Toyota",
-    type: "SUV",
-    year: 2023,
-    price: 37400,
-    oldPrice: null,
-    mileage: "5,100 mi",
-    fuel: "Hybrid",
-    transmission: "e-CVT",
-    engine: "2.5L Hybrid AWD",
-    color: "Magnetic Gray",
-    seats: 5,
-    status: "new",
-    emoji: "🔋",
-    bg: "#f9fbe7",
-    description: "Practical and efficient Toyota RAV4 Hybrid XSE. 219 combined HP, AWD, 8\" multimedia display, Toyota Safety Sense 2.0, wireless charging, and 37 MPG city. Perfect family SUV."
+    thumb: "images/vw/golf6/186ab04e-013a-438f-a4e6-3cec0a424fc7.avif",
+    images: [
+      "images/vw/golf6/186ab04e-013a-438f-a4e6-3cec0a424fc7.avif",
+      "images/vw/golf6/53d47201-4319-435f-81f9-e85730e5351c.avif",
+      "images/vw/golf6/8bf913b1-4de4-495d-b6e8-cc3ddc199d9a.avif",
+      "images/vw/golf6/9bcaa432-b685-4051-93d5-a7e2102a72bd.avif",
+      "images/vw/golf6/a09b75c7-8eea-47e7-aa74-3aee5d50b598.avif",
+      "images/vw/golf6/a40476f4-9dd0-4032-aa24-7cdd69896eef.avif",
+      "images/vw/golf6/cda97569-15bd-4c38-98ec-d4ae32d3be57.avif",
+      "images/vw/golf6/d0fb6970-d1ca-43c6-8cec-4caa0cb83b9e.avif",
+      "images/vw/golf6/d678ec2a-e2c3-4790-962a-172c8467531f.avif",
+      "images/vw/golf6/fc9a5821-b7cb-4bbb-8132-7a3a220092c0.avif"
+    ],
+    features: [
+      "ABS","Anhängerkupplung fest","Bluetooth",
+      "Freisprecheinrichtung","Tempomat","Tuner/Radio"
+    ]
   }
 ];
 
 // ===== STATE =====
-let activeFilter = "all";
-let favorites = new Set();
-let filteredCars = [...cars];
+let activeMake = "";
+let activeModel = "";
+let currentGalleryIndex = 0;
+let currentGalleryCar = null;
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
   renderCars(cars);
-  setupFilterButtons();
+  setupMakeFilterButtons();
   setupNavbar();
   setupHamburger();
+  updateModelFilter(); // init model dropdown
 });
 
 // ===== RENDER CARS =====
@@ -196,33 +288,26 @@ function renderCars(list) {
     noResults.classList.remove("hidden");
     return;
   }
-
   noResults.classList.add("hidden");
 
   grid.innerHTML = list.map(car => `
     <div class="car-card" onclick="openModal(${car.id})">
-      <div class="car-img" style="background:${car.bg}">
-        <span>${car.emoji}</span>
-        <span class="car-badge ${car.status}">${car.status === "new" ? "New" : car.status === "certified" ? "Certified" : "Used"}</span>
-        <button class="car-fav ${favorites.has(car.id) ? "active" : ""}"
-          onclick="toggleFav(event, ${car.id})"
-          aria-label="Save to favourites">
-          ${favorites.has(car.id) ? "❤️" : "🤍"}
-        </button>
+      <div class="car-img-real">
+        <img src="${encodePath(car.thumb)}" alt="${car.name}" loading="lazy" />
+        <span class="car-badge ${car.status}">${badgeLabel(car.status)}</span>
+        <span class="car-photo-count">📷 ${car.images.length}</span>
       </div>
       <div class="car-info">
-        <h3>${car.year} ${car.name}</h3>
+        <div class="car-make-tag">${car.make}</div>
+        <h3>${car.year ? car.year + ' ' : ''}${car.name}</h3>
         <div class="car-meta">
-          <span>📅 ${car.year}</span>
-          <span>🛣️ ${car.mileage}</span>
+          <span>🛣️ ${car.km}</span>
+          <span>⚡ ${car.power}</span>
           <span>⛽ ${car.fuel}</span>
-          <span>⚙️ ${car.transmission.split(" ")[0]}</span>
+          <span>⚙️ ${car.transmission}</span>
         </div>
         <div class="car-price-row">
-          <div>
-            <span class="car-price">$${car.price.toLocaleString()}</span>
-            ${car.oldPrice ? `<span class="car-old-price">$${car.oldPrice.toLocaleString()}</span>` : ""}
-          </div>
+          <span class="car-price-poa">Preis auf Anfrage</span>
           <button class="btn-details" onclick="event.stopPropagation(); openModal(${car.id})">Details →</button>
         </div>
       </div>
@@ -230,92 +315,193 @@ function renderCars(list) {
   `).join("");
 }
 
-// ===== FILTER BUTTONS =====
-function setupFilterButtons() {
+function badgeLabel(status) {
+  if (status === "certified") return "Geprüft";
+  return "Gebraucht";
+}
+
+function encodePath(path) {
+  return path.split("/").map((seg, i) => i === 0 ? seg : encodeURIComponent(seg)).join("/");
+}
+
+// ===== MAKE FILTER BUTTONS =====
+function setupMakeFilterButtons() {
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      activeFilter = btn.dataset.filter;
+      activeMake = btn.dataset.make;
+      activeModel = "";
+      renderModelSubFilter(activeMake);
       applyCurrentFilter();
     });
   });
 }
 
+function renderModelSubFilter(make) {
+  const bar = document.getElementById("modelFilterBar");
+  if (!make || !makesModels[make]) {
+    bar.innerHTML = "";
+    return;
+  }
+  const models = makesModels[make];
+  bar.innerHTML = `
+    <button class="model-btn active" data-model="" onclick="selectModel(this, '')">All ${make}</button>
+    ${models.map(m => `<button class="model-btn" data-model="${m}" onclick="selectModel(this, '${m}')">${m}</button>`).join("")}
+  `;
+}
+
+function selectModel(btn, model) {
+  document.querySelectorAll(".model-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  activeModel = model;
+  applyCurrentFilter();
+}
+
 function applyCurrentFilter() {
-  const list = activeFilter === "all"
-    ? cars
-    : cars.filter(c => c.type === activeFilter);
-  filteredCars = list;
+  let list = cars;
+  if (activeMake) list = list.filter(c => c.make === activeMake);
+  if (activeModel) list = list.filter(c => c.model === activeModel);
   renderCars(list);
 }
 
 // ===== HERO SEARCH =====
+function updateModelFilter() {
+  const make = document.getElementById("filterMake").value;
+  const modelSelect = document.getElementById("filterModel");
+  modelSelect.innerHTML = '<option value="">All Models</option>';
+  if (make && makesModels[make]) {
+    makesModels[make].forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m;
+      modelSelect.appendChild(opt);
+    });
+  }
+}
+
 function applyFilters() {
   const make = document.getElementById("filterMake").value;
-  const type = document.getElementById("filterType").value;
-  const price = document.getElementById("filterPrice").value;
+  const model = document.getElementById("filterModel").value;
+  const fuel = document.getElementById("filterFuel").value;
 
   let result = cars.filter(car => {
     if (make && car.make !== make) return false;
-    if (type && car.type !== type) return false;
-    if (price && car.price > parseInt(price)) return false;
+    if (model && car.model !== model) return false;
+    if (fuel && car.fuel !== fuel) return false;
     return true;
   });
 
-  // Scroll to inventory
   document.getElementById("inventory").scrollIntoView({ behavior: "smooth" });
 
-  // Reset filter bar
+  // Sync filter bar
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  document.querySelector(".filter-btn[data-filter='all']").classList.add("active");
-  activeFilter = "all";
+  document.querySelector(".filter-btn[data-make='']").classList.add("active");
+  activeMake = ""; activeModel = "";
+  document.getElementById("modelFilterBar").innerHTML = "";
 
-  setTimeout(() => renderCars(result), 500);
+  setTimeout(() => renderCars(result), 400);
 }
 
 function resetFilters() {
   document.getElementById("filterMake").value = "";
-  document.getElementById("filterType").value = "";
-  document.getElementById("filterPrice").value = "";
+  document.getElementById("filterModel").innerHTML = '<option value="">All Models</option>';
+  document.getElementById("filterFuel").value = "";
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  document.querySelector(".filter-btn[data-filter='all']").classList.add("active");
-  activeFilter = "all";
+  document.querySelector(".filter-btn[data-make='']").classList.add("active");
+  document.getElementById("modelFilterBar").innerHTML = "";
+  activeMake = ""; activeModel = "";
   renderCars(cars);
+}
+
+function filterByMakeLink(make) {
+  const btn = document.querySelector(`.filter-btn[data-make="${make}"]`);
+  if (btn) {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeMake = make;
+    activeModel = "";
+    renderModelSubFilter(make);
+    applyCurrentFilter();
+    document.getElementById("inventory").scrollIntoView({ behavior: "smooth" });
+  }
 }
 
 // ===== MODAL =====
 function openModal(id) {
   const car = cars.find(c => c.id === id);
   if (!car) return;
+  currentGalleryCar = car;
+  currentGalleryIndex = 0;
 
-  const savings = car.oldPrice ? car.oldPrice - car.price : null;
+  const specs = [
+    ["Year", car.year || "—"],
+    ["Mileage", car.km],
+    ["Power", car.power],
+    ["Engine", car.engine],
+    ["Fuel", car.fuel],
+    ["Transmission", car.transmission],
+    ["Series", car.series],
+    ["Color", car.color],
+    ["Interior", car.interior],
+    ["Seats", car.seats],
+    ["Doors", car.doors],
+    ["Euro Norm", car.eu],
+    ["HU / TÜV", car.hu],
+    ["Owners", car.owners ? `${car.owners}` : "—"],
+    ["Condition", car.condition],
+    ...(car.battery ? [["Battery", car.battery]] : []),
+    ...(car.available ? [["Available", car.available]] : []),
+  ];
 
   document.getElementById("modalContent").innerHTML = `
-    <div class="modal-img" style="background:${car.bg}">
-      <span>${car.emoji}</span>
+    <!-- GALLERY -->
+    <div class="modal-gallery">
+      <div class="gallery-main" id="galleryMain">
+        <img src="${encodePath(car.images[0])}" alt="${car.name}" id="galleryMainImg" />
+        <button class="gallery-arrow left" onclick="galleryPrev()">‹</button>
+        <button class="gallery-arrow right" onclick="galleryNext()">›</button>
+        <span class="gallery-counter" id="galleryCounter">1 / ${car.images.length}</span>
+      </div>
+      <div class="gallery-thumbs" id="galleryThumbs">
+        ${car.images.map((img, i) => `
+          <img src="${encodePath(img)}"
+               class="gallery-thumb ${i === 0 ? 'active' : ''}"
+               onclick="setGalleryImage(${i})"
+               alt="Photo ${i+1}" loading="lazy" />
+        `).join("")}
+      </div>
     </div>
+
+    <!-- INFO -->
     <div class="modal-body">
-      <h2>${car.year} ${car.name}</h2>
-      <div class="modal-price">
-        $${car.price.toLocaleString()}
-        ${car.oldPrice ? `<span style="font-size:1rem;color:#aaa;text-decoration:line-through;margin-left:10px;">$${car.oldPrice.toLocaleString()}</span>` : ""}
-        ${savings ? `<span style="font-size:0.9rem;background:#e8f5e9;color:#2d6a4f;padding:4px 10px;border-radius:20px;margin-left:10px;font-weight:700;">Save $${savings.toLocaleString()}</span>` : ""}
+      <div class="modal-header-row">
+        <div>
+          <span class="car-make-tag">${car.make}</span>
+          <h2>${car.year ? car.year + ' ' : ''}${car.name}</h2>
+        </div>
+        <span class="car-price-poa large">Preis auf Anfrage</span>
       </div>
+
       <div class="modal-specs">
-        <div class="spec-item"><div class="spec-label">Year</div><div class="spec-value">${car.year}</div></div>
-        <div class="spec-item"><div class="spec-label">Mileage</div><div class="spec-value">${car.mileage}</div></div>
-        <div class="spec-item"><div class="spec-label">Engine</div><div class="spec-value">${car.engine}</div></div>
-        <div class="spec-item"><div class="spec-label">Transmission</div><div class="spec-value">${car.transmission}</div></div>
-        <div class="spec-item"><div class="spec-label">Fuel Type</div><div class="spec-value">${car.fuel}</div></div>
-        <div class="spec-item"><div class="spec-label">Color</div><div class="spec-value">${car.color}</div></div>
-        <div class="spec-item"><div class="spec-label">Seats</div><div class="spec-value">${car.seats} seats</div></div>
-        <div class="spec-item"><div class="spec-label">Status</div><div class="spec-value" style="text-transform:capitalize">${car.status}</div></div>
+        ${specs.map(([label, val]) => `
+          <div class="spec-item">
+            <div class="spec-label">${label}</div>
+            <div class="spec-value">${val}</div>
+          </div>
+        `).join("")}
       </div>
-      <p class="modal-desc">${car.description}</p>
+
+      <div class="modal-features">
+        <h4>Ausstattung</h4>
+        <div class="features-tags">
+          ${car.features.map(f => `<span class="feat-tag">${f}</span>`).join("")}
+        </div>
+      </div>
+
       <div class="modal-actions">
-        <button class="btn-primary" onclick="showToast('📞 We will call you shortly to arrange a test drive!')">Book Test Drive</button>
-        <button class="btn-outline" onclick="showToast('💰 A financing quote has been sent to your email!')">Get Financing</button>
+        <button class="btn-primary" onclick="contactCar('${car.name}')">📞 Kontakt / Preis anfragen</button>
+        <button class="btn-outline" onclick="contactCar('${car.name} – Probefahrt')">🚗 Probefahrt buchen</button>
       </div>
     </div>
   `;
@@ -324,34 +510,62 @@ function openModal(id) {
   document.body.style.overflow = "hidden";
 }
 
+function setGalleryImage(index) {
+  if (!currentGalleryCar) return;
+  currentGalleryIndex = index;
+  document.getElementById("galleryMainImg").src = encodePath(currentGalleryCar.images[index]);
+  document.getElementById("galleryCounter").textContent = `${index + 1} / ${currentGalleryCar.images.length}`;
+  document.querySelectorAll(".gallery-thumb").forEach((t, i) => {
+    t.classList.toggle("active", i === index);
+  });
+  // Scroll thumb into view
+  const thumb = document.querySelectorAll(".gallery-thumb")[index];
+  if (thumb) thumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+}
+
+function galleryNext() {
+  if (!currentGalleryCar) return;
+  const next = (currentGalleryIndex + 1) % currentGalleryCar.images.length;
+  setGalleryImage(next);
+}
+
+function galleryPrev() {
+  if (!currentGalleryCar) return;
+  const prev = (currentGalleryIndex - 1 + currentGalleryCar.images.length) % currentGalleryCar.images.length;
+  setGalleryImage(prev);
+}
+
 function closeModal() {
   document.getElementById("modalOverlay").classList.remove("open");
   document.body.style.overflow = "";
+  currentGalleryCar = null;
 }
 
-// Close modal on Escape key
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeModal();
+  if (e.key === "ArrowRight") galleryNext();
+  if (e.key === "ArrowLeft") galleryPrev();
 });
 
-// ===== FAVOURITES =====
-function toggleFav(event, id) {
-  event.stopPropagation();
-  if (favorites.has(id)) {
-    favorites.delete(id);
-    showToast("💔 Removed from saved cars");
-  } else {
-    favorites.add(id);
-    showToast("❤️ Saved to your favourites!");
+// ===== CONTACT =====
+function contactCar(carName) {
+  const select = document.getElementById("interestedIn");
+  if (select) {
+    for (let opt of select.options) {
+      if (opt.text.toLowerCase().includes(carName.toLowerCase().split(" ")[1] || "")) {
+        select.value = opt.value;
+        break;
+      }
+    }
   }
-  // Re-render the current filtered list
-  applyCurrentFilter();
+  closeModal();
+  document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+  showToast("✅ Scroll down to fill in the contact form!");
 }
 
-// ===== CONTACT FORM =====
 function handleFormSubmit(event) {
   event.preventDefault();
-  showToast("✅ Message sent! We'll get back to you within 1 hour.");
+  showToast("✅ Message sent! We'll get back to you shortly.");
   event.target.reset();
 }
 
@@ -363,23 +577,18 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove("show"), 3500);
 }
 
-// ===== NAVBAR SCROLL =====
+// ===== NAVBAR =====
 function setupNavbar() {
   const navbar = document.getElementById("navbar");
   window.addEventListener("scroll", () => {
-    if (window.scrollY > 20) navbar.classList.add("scrolled");
-    else navbar.classList.remove("scrolled");
+    navbar.classList.toggle("scrolled", window.scrollY > 20);
   });
 }
 
-// ===== HAMBURGER =====
 function setupHamburger() {
   const hamburger = document.getElementById("hamburger");
   const navLinks = document.getElementById("navLinks");
-  hamburger.addEventListener("click", () => {
-    navLinks.classList.toggle("open");
-  });
-  // Close on nav link click
+  hamburger.addEventListener("click", () => navLinks.classList.toggle("open"));
   navLinks.querySelectorAll("a").forEach(a => {
     a.addEventListener("click", () => navLinks.classList.remove("open"));
   });

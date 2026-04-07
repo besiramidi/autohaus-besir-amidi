@@ -36,42 +36,34 @@
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <p class="hero-tag">Trusted Dealership Since 2010</p>
+      <p class="hero-tag">Trusted Dealership — Quality Cars</p>
       <h1>Find Your <span class="highlight">Dream Car</span><br />At The Best Price</h1>
-      <p class="hero-sub">Browse 200+ certified pre-owned and new vehicles.<br />Transparent pricing, no hidden fees.</p>
+      <p class="hero-sub">Browse our certified pre-owned vehicles.<br />Transparent pricing, no hidden fees.</p>
 
       <div class="search-box">
         <div class="search-group">
           <label>Make</label>
-          <select id="filterMake">
+          <select id="filterMake" onchange="updateModelFilter()">
             <option value="">All Makes</option>
-            <option>BMW</option>
-            <option>Mercedes</option>
-            <option>Audi</option>
-            <option>Toyota</option>
-            <option>Ford</option>
-            <option>Tesla</option>
+            <option value="Mercedes Benz">Mercedes Benz</option>
+            <option value="Audi">Audi</option>
+            <option value="BMW">BMW</option>
+            <option value="Volkswagen">Volkswagen</option>
           </select>
         </div>
         <div class="search-group">
-          <label>Type</label>
-          <select id="filterType">
-            <option value="">All Types</option>
-            <option>SUV</option>
-            <option>Sedan</option>
-            <option>Coupe</option>
-            <option>Electric</option>
-            <option>Truck</option>
+          <label>Model</label>
+          <select id="filterModel">
+            <option value="">All Models</option>
           </select>
         </div>
         <div class="search-group">
-          <label>Max Price</label>
-          <select id="filterPrice">
-            <option value="">Any Price</option>
-            <option value="20000">Under $20,000</option>
-            <option value="40000">Under $40,000</option>
-            <option value="70000">Under $70,000</option>
-            <option value="100000">Under $100,000</option>
+          <label>Fuel</label>
+          <select id="filterFuel">
+            <option value="">Any Fuel</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Benzin">Petrol</option>
+            <option value="Hybrid">Hybrid / PHEV</option>
           </select>
         </div>
         <button class="btn-search" onclick="applyFilters()">Search Cars</button>
@@ -79,13 +71,13 @@
     </div>
 
     <div class="hero-stats">
-      <div class="stat"><strong>200+</strong><span>Cars Available</span></div>
+      <div class="stat"><strong>5</strong><span>Cars Available</span></div>
       <div class="stat-divider"></div>
-      <div class="stat"><strong>15+</strong><span>Years Experience</span></div>
+      <div class="stat"><strong>4</strong><span>Top Brands</span></div>
       <div class="stat-divider"></div>
-      <div class="stat"><strong>5,000+</strong><span>Happy Customers</span></div>
+      <div class="stat"><strong>100%</strong><span>Inspected</span></div>
       <div class="stat-divider"></div>
-      <div class="stat"><strong>4.9★</strong><span>Average Rating</span></div>
+      <div class="stat"><strong>Direct</strong><span>From Owner</span></div>
     </div>
   </section>
 
@@ -95,22 +87,25 @@
       <div class="section-header">
         <p class="section-tag">Browse Our Fleet</p>
         <h2>Available <span class="highlight">Inventory</span></h2>
-        <p class="section-sub">All vehicles come with a full inspection report and warranty options.</p>
+        <p class="section-sub">All vehicles come with a full inspection report. Contact us for price details.</p>
       </div>
 
+      <!-- MAKE FILTER BAR -->
       <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">All Cars</button>
-        <button class="filter-btn" data-filter="SUV">SUV</button>
-        <button class="filter-btn" data-filter="Sedan">Sedan</button>
-        <button class="filter-btn" data-filter="Coupe">Coupe</button>
-        <button class="filter-btn" data-filter="Electric">Electric</button>
-        <button class="filter-btn" data-filter="Truck">Truck</button>
+        <button class="filter-btn active" data-make="">All Cars</button>
+        <button class="filter-btn" data-make="Mercedes Benz">Mercedes Benz</button>
+        <button class="filter-btn" data-make="Audi">Audi</button>
+        <button class="filter-btn" data-make="BMW">BMW</button>
+        <button class="filter-btn" data-make="Volkswagen">Volkswagen</button>
       </div>
+
+      <!-- MODEL SUB-FILTER (shown when a make is selected) -->
+      <div class="model-filter-bar" id="modelFilterBar"></div>
 
       <div class="cars-grid" id="carsGrid"></div>
 
       <div class="no-results hidden" id="noResults">
-        <p>😕 No cars match your filters. Try adjusting your search.</p>
+        <p>😕 No cars match your filters.</p>
         <button class="btn-primary" onclick="resetFilters()">Clear Filters</button>
       </div>
     </div>
@@ -127,32 +122,32 @@
         <div class="feature-card">
           <div class="feature-icon">🔍</div>
           <h3>Full Inspection</h3>
-          <p>Every car passes a 150-point inspection before listing. What you see is what you get.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
-          <h3>Best Price Guarantee</h3>
-          <p>We match or beat any competitor's price. Transparent pricing with zero hidden fees.</p>
+          <p>Every car passes a thorough inspection before listing. What you see is what you get.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">📋</div>
-          <h3>Vehicle History Report</h3>
-          <p>Free Carfax report on every vehicle. Full accident and service history included.</p>
+          <h3>Vehicle History</h3>
+          <p>Full service history and accident-free documentation provided for every vehicle.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🛡️</div>
-          <h3>Warranty Included</h3>
-          <p>All certified vehicles come with a 12-month powertrain warranty for your peace of mind.</p>
+          <h3>Accident-Free</h3>
+          <p>All our cars are carefully selected — unfallfrei (accident-free) vehicles only.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Personal Service</h3>
+          <p>Direct contact with the seller. No middleman. Fast responses and honest communication.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🏦</div>
-          <h3>Easy Financing</h3>
-          <p>Get pre-approved in minutes. Low rates, flexible terms, and financing for all credit types.</p>
+          <h3>Flexible Payment</h3>
+          <p>Negotiable prices and flexible payment arrangements for serious buyers.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🚚</div>
-          <h3>Home Delivery</h3>
-          <p>We deliver your vehicle to your doorstep. Shop from home, drive in comfort.</p>
+          <h3>Test Drive</h3>
+          <p>Test drives available by appointment. Come see the car in person before you decide.</p>
         </div>
       </div>
     </div>
@@ -167,67 +162,22 @@
           <p>AutoHaus Showroom</p>
         </div>
         <div class="about-badge">
-          <strong>15+</strong>
-          <span>Years of Trust</span>
+          <strong>5★</strong>
+          <span>Seller Rating</span>
         </div>
       </div>
       <div class="about-content">
         <p class="section-tag">Our Story</p>
         <h2>We're More Than Just a <span class="highlight">Car Dealer</span></h2>
-        <p>Founded in 2010, AutoHaus has grown from a small local lot to one of the region's most trusted dealerships. We believe buying a car should be exciting — not stressful.</p>
-        <p>Our team of experts guides you through every step: from finding the right vehicle to securing the best financing and handling all the paperwork.</p>
+        <p>At AutoHaus we offer a carefully selected range of quality used vehicles — all accident-free, fully inspected, and sold with complete transparency.</p>
+        <p>Each listing includes a full specification sheet, service history, and high-resolution photos so you know exactly what you're buying before you even arrive.</p>
         <ul class="about-list">
-          <li>✅ Certified Pre-Owned Program</li>
-          <li>✅ In-house financing specialists</li>
-          <li>✅ Trade-in accepted at fair value</li>
-          <li>✅ After-sales service &amp; maintenance</li>
+          <li>✅ Accident-free (Unfallfrei) vehicles</li>
+          <li>✅ Full service history provided</li>
+          <li>✅ Test drives available by appointment</li>
+          <li>✅ Fair prices — always negotiable</li>
         </ul>
         <a href="#contact" class="btn-primary">Get In Touch</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="testimonials">
-    <div class="container">
-      <div class="section-header">
-        <p class="section-tag">What Clients Say</p>
-        <h2>Real Stories from <span class="highlight">Real Buyers</span></h2>
-      </div>
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p>"Found my BMW X5 in perfect condition. The team was honest, no pressure, and the process was seamless. Highly recommended!"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">JM</div>
-            <div>
-              <strong>James Mitchell</strong>
-              <span>Bought: BMW X5 2022</span>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p>"Best dealership experience I've ever had. Got a great deal on my Tesla Model 3 and they delivered it to my home the next day!"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">SC</div>
-            <div>
-              <strong>Sarah Chen</strong>
-              <span>Bought: Tesla Model 3 2023</span>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p>"I was nervous about financing but they sorted everything out quickly. Drove away in my new Audi A4 the same afternoon!"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">MR</div>
-            <div>
-              <strong>Marco Rivera</strong>
-              <span>Bought: Audi A4 2021</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -237,20 +187,13 @@
     <div class="container contact-grid">
       <div class="contact-info">
         <p class="section-tag">Get In Touch</p>
-        <h2>Let's Find Your <span class="highlight">Perfect Car</span></h2>
-        <p>Have a question or want to book a test drive? Reach out and we'll get back to you within 1 hour.</p>
+        <h2>Interested in a <span class="highlight">Car?</span></h2>
+        <p>Send us a message for price details, more photos, or to arrange a test drive. We respond within the same day.</p>
         <div class="contact-items">
-          <div class="contact-item">
-            <span class="contact-icon">📍</span>
-            <div>
-              <strong>Location</strong>
-              <p>123 AutoHaus Boulevard, Los Angeles, CA 90001</p>
-            </div>
-          </div>
           <div class="contact-item">
             <span class="contact-icon">📞</span>
             <div>
-              <strong>Phone</strong>
+              <strong>Phone / WhatsApp</strong>
               <p>+1 (323) 456-7890</p>
             </div>
           </div>
@@ -264,7 +207,7 @@
           <div class="contact-item">
             <span class="contact-icon">🕐</span>
             <div>
-              <strong>Hours</strong>
+              <strong>Availability</strong>
               <p>Mon–Sat: 9AM–7PM &nbsp;|&nbsp; Sun: 11AM–5PM</p>
             </div>
           </div>
@@ -288,22 +231,24 @@
           <input type="email" placeholder="john@email.com" required />
         </div>
         <div class="form-group">
-          <label>Phone</label>
+          <label>Phone / WhatsApp</label>
           <input type="tel" placeholder="+1 (000) 000-0000" />
         </div>
         <div class="form-group">
           <label>Interested In</label>
-          <select>
+          <select id="interestedIn">
             <option>General Inquiry</option>
+            <option>Mercedes-Benz E Klasse</option>
+            <option>Audi A4</option>
+            <option>Audi A6</option>
+            <option>BMW 5er (M5)</option>
+            <option>Volkswagen Golf 6</option>
             <option>Test Drive Request</option>
-            <option>Financing Info</option>
-            <option>Trade-In Valuation</option>
-            <option>After-Sales Service</option>
           </select>
         </div>
         <div class="form-group">
           <label>Message</label>
-          <textarea rows="4" placeholder="Tell us how we can help you..."></textarea>
+          <textarea rows="4" placeholder="Tell us which car you're interested in, your budget, or any questions..."></textarea>
         </div>
         <button type="submit" class="btn-primary full-width">Send Message →</button>
       </form>
@@ -318,11 +263,11 @@
           <span class="logo-icon">🚗</span>
           <span>AutoHaus</span>
         </a>
-        <p>Your trusted partner for buying and selling quality vehicles since 2010.</p>
+        <p>Quality used vehicles — all accident-free, fully inspected, sold with transparency.</p>
         <div class="social-links">
           <a href="#" aria-label="Facebook">f</a>
           <a href="#" aria-label="Instagram">in</a>
-          <a href="#" aria-label="Twitter">tw</a>
+          <a href="#" aria-label="WhatsApp">w</a>
         </div>
       </div>
       <div class="footer-links">
@@ -335,21 +280,21 @@
         </ul>
       </div>
       <div class="footer-links">
-        <h4>Services</h4>
+        <h4>Our Cars</h4>
         <ul>
-          <li><a href="#">Buy a Car</a></li>
-          <li><a href="#">Sell Your Car</a></li>
-          <li><a href="#">Car Financing</a></li>
-          <li><a href="#">Trade-In</a></li>
-          <li><a href="#">Warranty Plans</a></li>
+          <li><a href="#" onclick="filterByMakeLink('Mercedes Benz')">Mercedes Benz</a></li>
+          <li><a href="#" onclick="filterByMakeLink('Audi')">Audi</a></li>
+          <li><a href="#" onclick="filterByMakeLink('BMW')">BMW</a></li>
+          <li><a href="#" onclick="filterByMakeLink('Volkswagen')">Volkswagen</a></li>
         </ul>
       </div>
       <div class="footer-links">
-        <h4>Legal</h4>
+        <h4>Models</h4>
         <ul>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Use</a></li>
-          <li><a href="#">Cookie Policy</a></li>
+          <li><a href="#">E Klasse</a></li>
+          <li><a href="#">A4 / A6</a></li>
+          <li><a href="#">5er (M5)</a></li>
+          <li><a href="#">Golf 6</a></li>
         </ul>
       </div>
     </div>
