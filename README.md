@@ -1,79 +1,123 @@
-# 🛍️ Online Shop Insta
+# 🚗 AutoHaus — Premium Car Dealership Website
 
-A modern e-commerce website for **Online Prodaja** - a Serbian online store selling products under 500 RSD, directly synced with Instagram.
+A modern, professional car dealership website showcasing real pre-owned and certified vehicles. Browse quality cars by brand, view full specifications, and book test drives directly online.
 
-## 📱 Features
+## ✨ Features
 
-- **Instagram Synced**: Products, prices, and follower count automatically match Instagram (@online.prodaja.do.500)
-- **Responsive Design**: Works on mobile, tablet, and desktop
-- **Product Categories**:
-  - 💪 Za Telo (Body Products)
-  - 🍳 Za Kuhinje (Kitchen Products)
-  - 🔥 Akcija (Special Offers)
-- **Fast Delivery**: Ships across Serbia
-- **Direct DM Integration**: All "Order" buttons link to Instagram DM for customer inquiries
+- **Real Car Listings** — 5 authentic vehicles with complete specs and detailed photo galleries
+- **Brand Filters** — Mercedes Benz, Audi, BMW, Volkswagen with cascading model selection
+- **Photo Gallery** — 10–17 high-quality images per car with fullscreen lightbox viewer
+- **Vehicle Details** — Complete specifications: mileage, power, engine, fuel type, transmission, features
+- **Contact Integration** — Inquiry form with vehicle-specific messaging
+- **Mobile Responsive** — Optimized for desktop, tablet, and mobile devices
+- **Professional Design** — Premium aesthetic with dark luxury theme
 
-## 🚀 Quick Start
+## 🚙 Current Inventory
 
-### Option 1: Open in Browser
-Simply double-click `index.html` to view the website locally.
+| Brand | Model | Year | Mileage | Power | Fuel |
+|-------|-------|------|---------|-------|------|
+| Mercedes Benz | E 220 d (W213) | 2017 | 156,000 km | 194 PS | Diesel |
+| Audi | A4 | — | — | — | — |
+| Audi | A6 sport 50 TFSI e quattro | 2022 | 54,408 km | 299 PS | PHEV |
+| BMW | M5 (F10) | 2013 | 96,875 km | 449 PS | Petrol |
+| Volkswagen | Golf 6 Variant | 2013 | 317,348 km | 105 PS | Petrol |
 
-### Option 2: Run with Server
+All vehicles are **accident-free (Unfallfrei)** with complete service records.
+
+## 🎨 Design
+
+- **Color Scheme**: Dark luxury theme with charcoal/navy primary and subtle red accents
+- **Typography**: Professional sans-serif (Inter font family)
+- **Layout**: Clean grid system, premium spacing, minimal clutter
+- **Interactions**: Smooth transitions, intuitive navigation, fullscreen image lightbox
+
+## 🛠️ Tech Stack
+
+- **HTML5** — Semantic structure
+- **CSS3** — Modern styling with CSS Grid, Flexbox, backdrop filters
+- **JavaScript** — Dynamic car listings, filters, modals, lightbox gallery
+- **Images** — Real car photos in AVIF format (~70 images across all vehicles)
+
+## 📁 Project Structure
+
+```
+autohaus-besir-amidi/
+├── index.html              # Main website (fully responsive)
+├── style.css               # All styling (no external frameworks)
+├── script.js               # Car data & interactivity
+├── images/
+│   ├── hero-bg.png         # Hero background image
+│   ├── mercedes/e-klasse/  # 16 car photos
+│   ├── audi/a4/            # 13 car photos
+│   ├── audi/a6/            # 14 car photos
+│   ├── bmw/5er/            # 17 car photos
+│   └── vw/golf6/           # 10 car photos
+├── CHANGELOG.md            # Feature update history
+└── README.md               # This file
+```
+
+## 🚀 Getting Started
+
+### View Locally
+Simply open `index.html` in any modern web browser:
 ```bash
-node server.js
-# Visit http://localhost:8000
+# Option 1: Double-click index.html
+# Option 2: Use a local server
+npx http-server
+# or
+python -m http.server 8000
 ```
 
-## 📦 Project Structure
+Then visit: `http://localhost:8000`
 
-```
-Online-Shop-Insta/
-├── index.html          # Main website (fully responsive)
-├── server.js           # Local Node.js server
-├── README.md           # This file
-└── .gitignore          # Git ignore rules
-```
+## 📸 Key Features Explained
 
-## 🎨 Design Features
+### Make & Model Filters
+- Click any brand (Mercedes Benz, Audi, BMW, Volkswagen)
+- Model buttons update automatically
+- All cars of that brand display
 
-- **Color Scheme**: Pink/Magenta (#e84393) matching Instagram branding
-- **Stats Bar**: Displays real Instagram follower count (3,047)
-- **Product Grid**: Auto-responsive grid layout
-- **Hover Effects**: Card animations for better UX
-- **Mobile Optimized**: Works great on all screen sizes
+### Car Detail Modal
+- Click any car card to view full details
+- See complete specifications, features list, and pricing note
+- Browse all photos with thumbnails at the bottom
 
-## 📊 Current Products
+### Fullscreen Lightbox
+- Click the main photo in the detail modal
+- View images fullscreen with dark overlay
+- Navigate with left/right arrows or keyboard arrows
+- Close with X button or Escape key
 
-### Body Products (Za Telo)
-- 🥵 Sauna Odelo - 490 RSD
-- 🔥 Pojas za Mršavljenje - 599 RSD
-- 🦵 Steznik Koleno - 699 RSD
-- ✨ Korektor Struka - 480 RSD
+### Contact Form
+- Select the specific car you're interested in
+- Submit inquiry with your details
+- Built-in dropdown populated with all available models
 
-### Kitchen Products (Za Kuhinje)
-- 🥄 Kuhinjski Set - 490 RSD
-- 🧴 Organizator za Sudoperu - 380 RSD
-- 🍽️ Silikonske Forme - 350 RSD
-- 🥢 Kuhinjske Klešte - 290 RSD
-- 🚰 Ručna Pumpa za Vodu - 399 RSD
-- 🍩 Aparat za Izradu Krofni - 450 RSD
+## 📝 Specs Example: Mercedes E 220 d
 
-### Special Offers (Akcija)
-- 🏷️ Akcijski Paket — Telo - 490 RSD
-- 🎁 Akcijski Paket — Kuhinja - 450 RSD
-- 💝 Mega Paket — Sve u Jednom - 499 RSD
-- ⚪ Olovka za Izbeljivanje Zuba - 599 RSD
+- **Year**: 2017
+- **Mileage**: 156,000 km
+- **Engine**: 1.950 cm³ · 4-cylinder
+- **Power**: 143 kW (194 PS)
+- **Transmission**: Automatic
+- **Fuel**: Diesel
+- **Color**: Obsidian Black Metallic
+- **Interior**: Full leather, Brown
+- **Condition**: Unfallfrei (accident-free)
+- **Features**: 20+ including Head-Up Display, Navigation, Schiebedach, Sitzheizung, etc.
 
 ## 🔗 Links
 
-- **Instagram**: [@online.prodaja.do.500](https://www.instagram.com/online.prodaja.do.500)
-- **Followers**: 3,047+
-- **Delivery**: Entire Serbian territory
+- **GitHub Repo**: [besiramidi/autohaus-besir-amidi](https://github.com/besiramidi/autohaus-besir-amidi)
+- **Main Branch**: `main`
+- **Live Site**: Available via GitHub Pages (Settings → Pages → Deploy from main)
 
-## 📝 License
+## 📜 Updates
 
-© 2026 Online Prodaja. All rights reserved.
+See [CHANGELOG.md](CHANGELOG.md) for full feature history and recent updates.
 
 ---
 
-**Status**: ✅ Live and synced with Instagram | **Last Updated**: April 7, 2026
+**Status**: ✅ Live | **Last Major Update**: Fullscreen lightbox gallery | **Design**: Premium dark luxury theme
+
+© 2026 AutoHaus — Besir Amidi. All rights reserved.
