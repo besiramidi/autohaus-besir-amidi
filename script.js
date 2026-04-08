@@ -480,7 +480,7 @@ function openModal(id) {
           <span class="car-make-tag">${car.make}</span>
           <h2>${car.year ? car.year + ' ' : ''}${car.name}</h2>
         </div>
-        <span class="car-price-poa large">Preis auf Anfrage</span>
+        <span class="car-price-poa large">Price on Request</span>
       </div>
 
       <div class="modal-specs">

@@ -2,6 +2,27 @@
 
 ---
 
+## Update 6 — Bug Fixes (Live Testing)
+
+- Fixed single-result grid leaving empty dark space (`auto-fill` → `auto-fit`)
+- Fixed 3 Mercedes thumbnails with spaces in filenames returning 404 (server now decodes URLs)
+- Fixed modal showing "Preis auf Anfrage" in German — now "Price on Request"
+
+---
+
+## Update 5 — Full Visual Redesign
+
+- Dark luxury automotive aesthetic (near-black background, warm gold accents)
+- New font pairing: Cormorant Garamond (headings) + Barlow (UI/body)
+- Staggered fade-up hero animations
+- Editorial inventory grid with 1px border lines between cards, gold reveal on hover
+- Feature cards replaced emoji icons with expanding gold line accents
+- Contact form, modal, and lightbox all restyled to match dark theme
+- Removed all emojis site-wide — clean typographic labels throughout
+- Navbar transparent over hero, solid dark on scroll
+
+---
+
 ## Update 4 — Fullscreen Image Lightbox
 
 - Clicking the main gallery image in any car modal now opens a fullscreen lightbox
