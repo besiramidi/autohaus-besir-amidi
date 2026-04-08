@@ -2,6 +2,13 @@
 
 ---
 
+## Update 8 — Smart Slot Availability
+
+- Booked time slots are now tracked per car — booking a BMW at 10:00 does not block an Audi at 10:00
+- Past time slots on today's date are automatically shown as unavailable
+
+---
+
 ## Update 7 — Test Drive Email Confirmation
 
 - Booking a test drive now sends a confirmation email to the customer

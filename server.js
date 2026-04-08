@@ -17,7 +17,7 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 // Format: "YYYY-MM-DD|HH:MM"
 const bookedSlots = new Set();
 
-function slotKey(date, time) { return `${date}|${time}`; }
+function slotKey(date, time, car) { return `${date}|${time}|${car}`; }
 
 // ── Availability by day of week ───────────────────────────────────────────────
 function getSlotsForDate(dateStr) {
@@ -139,12 +139,21 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && req.url.startsWith('/api/slots')) {
     const url    = new URL(req.url, 'http://localhost');
     const date   = url.searchParams.get('date');
+    const car    = url.searchParams.get('car') || '';
     if (!date) { res.writeHead(400); res.end(JSON.stringify({ error: 'date required' })); return; }
 
-    const slots  = getSlotsForDate(date).map(({ start, end }) => ({
-      start, end,
-      available: !bookedSlots.has(slotKey(date, start))
-    }));
+    const now         = new Date();
+    const todayStr    = now.toISOString().split('T')[0];
+    const nowMinutes  = now.getHours() * 60 + now.getMinutes();
+
+    const slots  = getSlotsForDate(date).map(({ start, end }) => {
+      const slotMinutes = parseInt(start.split(':')[0]) * 60;
+      const isPast      = date === todayStr && slotMinutes <= nowMinutes;
+      return {
+        start, end,
+        available: !isPast && !bookedSlots.has(slotKey(date, start, car))
+      };
+    });
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(slots));
@@ -166,7 +175,7 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const key = slotKey(date, time);
+        const key = slotKey(date, time, car);
         if (bookedSlots.has(key)) {
           res.writeHead(409, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'This slot was just taken. Please choose another time.' }));

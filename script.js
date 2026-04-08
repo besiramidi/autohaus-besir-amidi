@@ -871,7 +871,7 @@ async function selectDate(dateStr) {
     `<div class="slots-loading"><span></span><span></span><span></span></div>`;
 
   try {
-    const res   = await fetch(`/api/slots?date=${dateStr}`);
+    const res   = await fetch(`/api/slots?date=${dateStr}&car=${encodeURIComponent(bookingCar)}`);
     const slots = await res.json();
     renderTimeSlots(slots);
   } catch {
