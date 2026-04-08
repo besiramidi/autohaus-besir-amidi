@@ -211,43 +211,83 @@
         </div>
       </div>
 
-      <form class="contact-form" id="contactForm" onsubmit="handleFormSubmit(event)">
-        <h3>Send a Message</h3>
+      <form class="contact-form" id="contactForm" onsubmit="handleFormSubmit(event)" novalidate>
+        <div class="cf-heading">
+          <h3>Send a Message</h3>
+          <p class="cf-sub">We respond within the same day.</p>
+        </div>
+
         <div class="form-row">
-          <div class="form-group">
-            <label>First Name</label>
-            <input type="text" placeholder="John" required />
+          <div class="cf-field" id="field-firstName">
+            <input type="text" id="cfFirstName" name="firstName" placeholder=" " required autocomplete="given-name" />
+            <label for="cfFirstName">First Name</label>
+            <span class="cf-bar"></span>
+            <span class="cf-error" id="err-firstName"></span>
           </div>
-          <div class="form-group">
-            <label>Last Name</label>
-            <input type="text" placeholder="Doe" required />
+          <div class="cf-field" id="field-lastName">
+            <input type="text" id="cfLastName" name="lastName" placeholder=" " required autocomplete="family-name" />
+            <label for="cfLastName">Last Name</label>
+            <span class="cf-bar"></span>
+            <span class="cf-error" id="err-lastName"></span>
           </div>
         </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="john@email.com" required />
+
+        <div class="cf-field" id="field-email">
+          <input type="email" id="cfEmail" name="email" placeholder=" " required autocomplete="email" />
+          <label for="cfEmail">Email Address</label>
+          <span class="cf-bar"></span>
+          <span class="cf-error" id="err-email"></span>
         </div>
-        <div class="form-group">
-          <label>Phone / WhatsApp</label>
-          <input type="tel" placeholder="+1 (000) 000-0000" />
+
+        <div class="cf-field" id="field-phone">
+          <input type="tel" id="cfPhone" name="phone" placeholder=" " autocomplete="tel" />
+          <label for="cfPhone">Phone / WhatsApp</label>
+          <span class="cf-bar"></span>
         </div>
-        <div class="form-group">
-          <label>Interested In</label>
-          <select id="interestedIn">
-            <option>General Inquiry</option>
-            <option>Mercedes-Benz E Klasse</option>
-            <option>Audi A4</option>
-            <option>Audi A6</option>
-            <option>BMW 5er (M5)</option>
-            <option>Volkswagen Golf 6</option>
-            <option>Test Drive Request</option>
+
+        <div class="cf-field cf-field--select" id="field-interest">
+          <select id="cfInterest" name="interest">
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Mercedes-Benz E Klasse">Mercedes-Benz E Klasse</option>
+            <option value="Audi A4">Audi A4</option>
+            <option value="Audi A6">Audi A6</option>
+            <option value="BMW 5er (M5)">BMW 5er (M5)</option>
+            <option value="Volkswagen Golf 6">Volkswagen Golf 6</option>
+            <option value="Test Drive Request">Test Drive Request</option>
           </select>
+          <label for="cfInterest" class="cf-label--floated">Interested In</label>
+          <span class="cf-bar"></span>
+          <span class="cf-select-arrow">
+            <svg viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
         </div>
-        <div class="form-group">
-          <label>Message</label>
-          <textarea rows="4" placeholder="Tell us which car you're interested in, your budget, or any questions..."></textarea>
+
+        <div class="cf-field cf-field--textarea" id="field-message">
+          <textarea id="cfMessage" name="message" placeholder=" " rows="4" maxlength="500"></textarea>
+          <label for="cfMessage">Your Message</label>
+          <span class="cf-bar"></span>
+          <span class="cf-counter"><span id="cfMsgCount">0</span> / 500</span>
         </div>
-        <button type="submit" class="btn-primary full-width">Send Message</button>
+
+        <button type="submit" class="cf-submit" id="cfSubmit">
+          <span class="cf-submit-label">Send Message</span>
+          <span class="cf-submit-dots"><span></span><span></span><span></span></span>
+          <svg class="cf-submit-arrow" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="cf-success" id="cfSuccess">
+          <div class="cf-success-icon">
+            <svg class="cf-checkmark" viewBox="0 0 52 52" fill="none">
+              <circle class="cf-checkmark-circle" cx="26" cy="26" r="24" stroke="currentColor" stroke-width="1"/>
+              <path class="cf-checkmark-check" d="M14 26l8 8 16-16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h4>Message Sent</h4>
+          <p>Thank you — we'll get back to you within the same day.</p>
+          <button type="button" class="cf-again" onclick="resetContactForm()">Send Another</button>
+        </div>
       </form>
     </div>
   </section>
@@ -318,6 +358,115 @@
 
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
+
+  <!-- BOOKING MODAL -->
+  <div class="booking-overlay" id="bookingOverlay" onclick="closeBooking()">
+    <div class="booking-modal" id="bookingModal" onclick="event.stopPropagation()">
+      <button class="booking-close" onclick="closeBooking()">✕</button>
+
+      <!-- Progress Bar -->
+      <div class="booking-progress" id="bookingProgress">
+        <div class="bp-step active" id="bpStep1">
+          <div class="bp-dot"><span>1</span></div>
+          <span class="bp-label">Date</span>
+        </div>
+        <div class="bp-line"></div>
+        <div class="bp-step" id="bpStep2">
+          <div class="bp-dot"><span>2</span></div>
+          <span class="bp-label">Time</span>
+        </div>
+        <div class="bp-line"></div>
+        <div class="bp-step" id="bpStep3">
+          <div class="bp-dot"><span>3</span></div>
+          <span class="bp-label">Confirm</span>
+        </div>
+      </div>
+
+      <!-- Panel 1 — Calendar -->
+      <div class="booking-panel" id="bPanel1">
+        <div class="bp-header">
+          <h3>Select a Date</h3>
+          <p class="bp-car" id="bCarName"></p>
+        </div>
+        <div class="booking-calendar">
+          <div class="cal-nav-row">
+            <button class="cal-arrow" id="calPrev" onclick="calNav(-1)">‹</button>
+            <span class="cal-title" id="calMonthYear"></span>
+            <button class="cal-arrow" id="calNext" onclick="calNav(1)">›</button>
+          </div>
+          <div class="cal-weekdays">
+            <span>Mo</span><span>Tu</span><span>We</span>
+            <span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+          </div>
+          <div class="cal-days" id="calDays"></div>
+        </div>
+        <p class="cal-hint">Available up to 45 days ahead · Mon–Sat 9AM–7PM · Sun 11AM–5PM</p>
+      </div>
+
+      <!-- Panel 2 — Time Slots -->
+      <div class="booking-panel hidden" id="bPanel2">
+        <div class="bp-header">
+          <button class="bp-back" onclick="bookingGoTo(1)">← Back</button>
+          <h3>Choose a Time</h3>
+          <p class="bp-date-label" id="bDateLabel"></p>
+        </div>
+        <div class="time-slots" id="timeSlots">
+          <div class="slots-loading">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3 — Confirm -->
+      <div class="booking-panel hidden" id="bPanel3">
+        <div class="bp-header">
+          <button class="bp-back" onclick="bookingGoTo(2)">← Back</button>
+          <h3>Approve Test Drive</h3>
+        </div>
+        <div class="booking-summary" id="bookingSummary"></div>
+        <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)" novalidate>
+          <div class="bf-field" id="bfFieldName">
+            <input type="text" id="bfName" placeholder=" " required autocomplete="name" />
+            <label for="bfName">Full Name</label>
+            <span class="bf-bar"></span>
+            <span class="bf-error" id="bfNameErr"></span>
+          </div>
+          <div class="bf-field" id="bfFieldEmail">
+            <input type="email" id="bfEmail" placeholder=" " required autocomplete="email" />
+            <label for="bfEmail">Email Address</label>
+            <span class="bf-bar"></span>
+            <span class="bf-error" id="bfEmailErr"></span>
+          </div>
+          <div class="bf-field">
+            <input type="tel" id="bfPhone" placeholder=" " autocomplete="tel" />
+            <label for="bfPhone">Phone / WhatsApp</label>
+            <span class="bf-bar"></span>
+          </div>
+          <button type="submit" class="cf-submit booking-submit" id="bfSubmit">
+            <span class="cf-submit-label">Approve Test Drive</span>
+            <span class="cf-submit-dots"><span></span><span></span><span></span></span>
+            <svg class="cf-submit-arrow" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Panel 4 — Success -->
+      <div class="booking-panel booking-success hidden" id="bPanel4">
+        <div class="bs-icon" id="bsIcon">
+          <svg class="bs-checkmark" viewBox="0 0 52 52" fill="none">
+            <circle class="bs-circle" cx="26" cy="26" r="24" stroke="currentColor" stroke-width="1"/>
+            <path class="bs-check" d="M14 26l8 8 16-16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Appointment Confirmed</h3>
+        <p id="bSuccessMsg"></p>
+        <p class="bs-email-note">A confirmation email is on its way to<br><strong id="bSuccessEmail"></strong></p>
+        <button type="button" class="cf-again" onclick="closeBooking()">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

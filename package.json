@@ -1,23 +1,15 @@
 {
-  "name": "online-shop-insta",
+  "name": "autohaus",
   "version": "1.0.0",
-  "description": "Modern e-commerce website for Online Prodaja - Serbian online store synced with Instagram",
+  "description": "AutoHaus — Premium Pre-Owned Vehicles dealership website",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": [
-    "ecommerce",
-    "online-shop",
-    "instagram",
-    "serbia",
-    "products"
-  ],
-  "author": "Online Prodaja",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/Online-Shop-Insta.git"
-  }
+  "dependencies": {
+    "resend": "^6.10.0"
+  },
+  "author": "Besir Amidi",
+  "license": "MIT"
 }

@@ -275,7 +275,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMakeFilterButtons();
   setupNavbar();
   setupHamburger();
-  updateModelFilter(); // init model dropdown
+  updateModelFilter();
+  setupContactForm();
 });
 
 // ===== RENDER CARS =====
@@ -501,7 +502,7 @@ function openModal(id) {
 
       <div class="modal-actions">
         <button class="btn-primary" onclick="contactCar('${car.name}')">Inquire / Request Price</button>
-        <button class="btn-outline" onclick="contactCar('${car.name} – Probefahrt')">Book a Test Drive</button>
+        <button class="btn-outline" onclick="closeModal(); openBooking('${car.name.replace(/'/g, "\\'")}')">Book a Test Drive</button>
       </div>
     </div>
   `;
@@ -543,6 +544,7 @@ function closeModal() {
 }
 
 document.addEventListener("keydown", e => {
+  if (document.getElementById("bookingOverlay").classList.contains("open")) return;
   if (document.getElementById("lightbox").classList.contains("open")) {
     if (e.key === "Escape") closeLightbox();
     if (e.key === "ArrowRight") lightboxNext();
@@ -589,10 +591,11 @@ function lightboxPrev() {
 
 // ===== CONTACT =====
 function contactCar(carName) {
-  const select = document.getElementById("interestedIn");
+  const select = document.getElementById("cfInterest");
   if (select) {
+    const lower = carName.toLowerCase();
     for (let opt of select.options) {
-      if (opt.text.toLowerCase().includes(carName.toLowerCase().split(" ")[1] || "")) {
+      if (opt.value.toLowerCase().includes(lower.split(" ")[1] || "")) {
         select.value = opt.value;
         break;
       }
@@ -600,13 +603,112 @@ function contactCar(carName) {
   }
   closeModal();
   document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
-  showToast("Scroll down to fill in the contact form.");
+  showToast("Fill in the form below to get in touch.");
+}
+
+// ===== FORM VALIDATION =====
+function cfValidate(id, errorId, check, msg) {
+  const field = document.getElementById("field-" + id);
+  const el = document.getElementById(id === "firstName" ? "cfFirstName"
+    : id === "lastName" ? "cfLastName"
+    : id === "email" ? "cfEmail"
+    : id === "message" ? "cfMessage" : "cf" + id.charAt(0).toUpperCase() + id.slice(1));
+  const err = errorId ? document.getElementById(errorId) : null;
+  if (!el || !field) return true;
+  const valid = check(el.value.trim());
+  field.classList.toggle("has-error", !valid);
+  field.classList.toggle("is-valid", valid && el.value.trim() !== "");
+  if (err) err.textContent = valid ? "" : msg;
+  return valid;
 }
 
 function handleFormSubmit(event) {
   event.preventDefault();
-  showToast("Message sent. We'll get back to you shortly.");
-  event.target.reset();
+
+  const firstOk = cfValidate("firstName", "err-firstName",
+    v => v.length >= 2, "Please enter your first name.");
+  const lastOk  = cfValidate("lastName",  "err-lastName",
+    v => v.length >= 2, "Please enter your last name.");
+  const emailOk = cfValidate("email", "err-email",
+    v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Please enter a valid email.");
+
+  if (!firstOk || !lastOk || !emailOk) return;
+
+  const btn = document.getElementById("cfSubmit");
+  btn.classList.add("loading");
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.classList.remove("loading");
+    btn.disabled = false;
+    showSuccessState();
+  }, 1400);
+}
+
+function showSuccessState() {
+  const form    = document.getElementById("contactForm");
+  const success = document.getElementById("cfSuccess");
+
+  // Hide all form fields and button
+  [...form.children].forEach(el => {
+    if (!el.classList.contains("cf-success")) el.style.display = "none";
+  });
+
+  success.style.display = "flex";
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => success.classList.add("visible"));
+  });
+}
+
+function resetContactForm() {
+  const form    = document.getElementById("contactForm");
+  const success = document.getElementById("cfSuccess");
+
+  success.classList.remove("visible");
+  setTimeout(() => {
+    success.style.display = "none";
+    [...form.children].forEach(el => {
+      if (!el.classList.contains("cf-success")) el.style.display = "";
+    });
+    form.reset();
+    document.getElementById("cfMsgCount").textContent = "0";
+    document.querySelectorAll(".cf-field").forEach(f => {
+      f.classList.remove("has-error", "is-valid");
+    });
+    document.querySelectorAll(".cf-error").forEach(e => e.textContent = "");
+  }, 400);
+}
+
+// ===== CONTACT FORM SETUP =====
+function setupContactForm() {
+  const rules = [
+    { id: "cfFirstName", fieldId: "firstName", errId: "err-firstName",
+      check: v => v.length >= 2, msg: "Please enter your first name." },
+    { id: "cfLastName",  fieldId: "lastName",  errId: "err-lastName",
+      check: v => v.length >= 2, msg: "Please enter your last name." },
+    { id: "cfEmail",     fieldId: "email",     errId: "err-email",
+      check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), msg: "Please enter a valid email." },
+  ];
+
+  rules.forEach(({ id, fieldId, errId, check, msg }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("blur", () => {
+      if (el.value.trim()) cfValidate(fieldId, errId, check, msg);
+    });
+    el.addEventListener("input", () => {
+      const field = document.getElementById("field-" + fieldId);
+      if (field && field.classList.contains("has-error")) {
+        cfValidate(fieldId, errId, check, msg);
+      }
+    });
+  });
+
+  const msgEl   = document.getElementById("cfMessage");
+  const counter = document.getElementById("cfMsgCount");
+  if (msgEl && counter) {
+    msgEl.addEventListener("input", () => { counter.textContent = msgEl.value.length; });
+  }
 }
 
 // ===== TOAST =====
@@ -633,3 +735,266 @@ function setupHamburger() {
     a.addEventListener("click", () => navLinks.classList.remove("open"));
   });
 }
+
+// =====================================================================
+// ===== BOOKING SYSTEM ================================================
+// =====================================================================
+const MONTH_NAMES = ["January","February","March","April","May","June",
+                     "July","August","September","October","November","December"];
+const DAY_NAMES   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+let bookingCar         = "";
+let bookingDate        = "";
+let bookingTime        = "";   // start time "09:00"
+let bookingTimeDisplay = "";   // "09:00 – 10:00"
+let calYear, calMonth;
+
+// ── Open / Close ──────────────────────────────────────────────────────
+function openBooking(carName) {
+  bookingCar         = carName;
+  bookingDate        = "";
+  bookingTime        = "";
+  bookingTimeDisplay = "";
+
+  document.getElementById("bCarName").textContent = carName;
+
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+
+  renderCalendar();
+  bookingGoTo(1);
+
+  document.getElementById("bookingProgress").style.display = "";
+  document.getElementById("bookingOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeBooking() {
+  document.getElementById("bookingOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// ── Step navigation ───────────────────────────────────────────────────
+function bookingGoTo(step) {
+  for (let i = 1; i <= 4; i++) {
+    const panel = document.getElementById("bPanel" + i);
+    if (panel) panel.classList.toggle("hidden", i !== step);
+  }
+
+  // Update progress indicators (only steps 1-3)
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById("bpStep" + i);
+    if (!el) continue;
+    el.classList.remove("active", "done");
+    if (i < step)      el.classList.add("done");
+    else if (i === step) el.classList.add("active");
+  }
+
+  // Hide progress bar on success panel
+  const progress = document.getElementById("bookingProgress");
+  if (progress) progress.style.display = step === 4 ? "none" : "";
+
+  // Animate success checkmark
+  if (step === 4) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById("bPanel4").classList.add("animate");
+      });
+    });
+  }
+}
+
+// ── Calendar ──────────────────────────────────────────────────────────
+function renderCalendar() {
+  document.getElementById("calMonthYear").textContent =
+    MONTH_NAMES[calMonth] + " " + calYear;
+
+  const now     = new Date();
+  const today   = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 45);
+
+  // Monday-first offset
+  const firstDow    = new Date(calYear, calMonth, 1).getDay();
+  const startOffset = firstDow === 0 ? 6 : firstDow - 1;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  let html = "";
+
+  for (let i = 0; i < startOffset; i++) html += `<span class="cal-day empty"></span>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date    = new Date(calYear, calMonth, d);
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast  = date < today;
+    const isFar   = date > maxDate;
+    const isOff   = isPast || isFar;
+    const isSel   = dateStr === bookingDate;
+    const isTodayFlag = date.getTime() === today.getTime();
+
+    const isSun = date.getDay() === 0;
+    let cls = "cal-day";
+    if (isOff || isSun) cls += " disabled";
+    else if (isSel)     cls += " selected";
+    else if (isTodayFlag) cls += " today";
+
+    html += `<span class="${cls}" ${(isOff || isSun) ? "" : `onclick="selectDate('${dateStr}')"`}>${d}</span>`;
+  }
+
+  document.getElementById("calDays").innerHTML = html;
+
+  // Disable prev button when already at current month
+  document.getElementById("calPrev").disabled =
+    calYear === now.getFullYear() && calMonth === now.getMonth();
+}
+
+function calNav(dir) {
+  calMonth += dir;
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  renderCalendar();
+}
+
+async function selectDate(dateStr) {
+  bookingDate = dateStr;
+  renderCalendar();
+
+  const d = new Date(dateStr + 'T12:00:00');
+  document.getElementById("bDateLabel").textContent =
+    DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] + " " + d.getDate();
+
+  bookingGoTo(2);
+
+  // Show loading
+  document.getElementById("timeSlots").innerHTML =
+    `<div class="slots-loading"><span></span><span></span><span></span></div>`;
+
+  try {
+    const res   = await fetch(`/api/slots?date=${dateStr}`);
+    const slots = await res.json();
+    renderTimeSlots(slots);
+  } catch {
+    document.getElementById("timeSlots").innerHTML =
+      `<p class="slots-empty">Could not load slots. Please try again.</p>`;
+  }
+}
+
+function renderTimeSlots(slots) {
+  if (!slots || !slots.length) {
+    document.getElementById("timeSlots").innerHTML =
+      `<p class="slots-empty">No available time slots for this date.</p>`;
+    return;
+  }
+
+  const html = slots.map(({ start, end, available }) => `
+    <button class="time-slot ${available ? "" : "taken"}"
+            data-start="${start}"
+            ${available ? `onclick="selectTime('${start}','${end}')"` : "disabled"}>
+      <span class="slot-start">${start}</span>
+      <span class="slot-dash">–</span>
+      <span class="slot-end">${end}</span>
+      ${!available ? `<span class="slot-taken">booked</span>` : ""}
+    </button>
+  `).join("");
+
+  document.getElementById("timeSlots").innerHTML = html;
+}
+
+function selectTime(start, end) {
+  bookingTime        = start;
+  bookingTimeDisplay = `${start} – ${end}`;
+
+  // Highlight selected slot visually
+  document.querySelectorAll(".time-slot").forEach(btn => {
+    btn.classList.toggle("selected", btn.dataset.start === start);
+  });
+
+  // Build summary
+  const d = new Date(bookingDate + 'T12:00:00');
+  const dateLabel = DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] +
+                    " " + d.getDate() + ", " + d.getFullYear();
+
+  document.getElementById("bookingSummary").innerHTML = `
+    <div class="bs-row"><span>Vehicle</span><strong>${bookingCar}</strong></div>
+    <div class="bs-row"><span>Date</span><strong>${dateLabel}</strong></div>
+    <div class="bs-row"><span>Time</span><strong class="bs-time">${bookingTimeDisplay}</strong></div>
+  `;
+
+  // Small delay so user sees the selection before transitioning
+  setTimeout(() => bookingGoTo(3), 160);
+}
+
+// ── Form submission ───────────────────────────────────────────────────
+async function submitBooking(event) {
+  event.preventDefault();
+
+  const name  = document.getElementById("bfName").value.trim();
+  const email = document.getElementById("bfEmail").value.trim();
+  const phone = document.getElementById("bfPhone").value.trim();
+
+  // Validate
+  let valid = true;
+
+  const nameField = document.getElementById("bfFieldName");
+  const nameErr   = document.getElementById("bfNameErr");
+  if (name.length < 2) {
+    nameField.classList.add("has-error");
+    nameErr.textContent = "Please enter your full name.";
+    valid = false;
+  } else {
+    nameField.classList.remove("has-error");
+    nameErr.textContent = "";
+  }
+
+  const emailField = document.getElementById("bfFieldEmail");
+  const emailErr   = document.getElementById("bfEmailErr");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailField.classList.add("has-error");
+    emailErr.textContent = "Please enter a valid email address.";
+    valid = false;
+  } else {
+    emailField.classList.remove("has-error");
+    emailErr.textContent = "";
+  }
+
+  if (!valid) return;
+
+  const btn = document.getElementById("bfSubmit");
+  btn.classList.add("loading");
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch("/api/book", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      const d = new Date(bookingDate + 'T12:00:00');
+      const dateLabel = DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] +
+                        " " + d.getDate() + ", " + d.getFullYear();
+      document.getElementById("bSuccessMsg").textContent =
+        `Your test drive for the ${bookingCar} is set for ${dateLabel}, ${bookingTimeDisplay}.`;
+      document.getElementById("bSuccessEmail").textContent = email;
+      bookingGoTo(4);
+    } else {
+      showToast(data.error || "Booking failed. Please try again.");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+  } catch {
+    showToast("Connection error. Please try again.");
+    btn.classList.remove("loading");
+    btn.disabled = false;
+  }
+}
+
+// Escape key closes booking modal
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.getElementById("bookingOverlay").classList.contains("open")) {
+    closeBooking();
+  }
+});
