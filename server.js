@@ -11,7 +11,7 @@ const { Resend } = require('resend');
 // FROM_EMAIL   — verified sender address in your Resend domain (required).
 //                Must match a domain verified in your Resend account.
 // ─────────────────────────────────────────────────────────────────────────────
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // In-memory booked slots — resets on server restart
 // Format: "YYYY-MM-DD|HH:MM"
@@ -176,7 +176,7 @@ const server = http.createServer((req, res) => {
         bookedSlots.add(key);
 
         // Send emails if Resend is configured
-        if (process.env.RESEND_API_KEY) {
+        if (resend) {
           try {
             const dealerEmail = process.env.DEALER_EMAIL || '';
             const fromEmail   = process.env.FROM_EMAIL   || 'noreply@yourdomain.com';
