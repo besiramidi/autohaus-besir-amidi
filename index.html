@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoHaus — Find Your Perfect Car</title>
+  <title>AutoHaus — Premium Pre-Owned Vehicles</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
@@ -14,8 +15,7 @@
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#" class="nav-logo">
-        <span class="logo-icon">🚗</span>
-        <span>AutoHaus</span>
+        <span class="logo-mark">AUTOHAUS</span>
       </a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#home">Home</a></li>
@@ -24,7 +24,7 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="tel:+1234567890" class="btn-call">📞 Call Us</a>
+        <a href="tel:+1234567890" class="btn-call">Call Us</a>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
@@ -36,8 +36,8 @@
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <p class="hero-tag">Trusted Dealership — Quality Cars</p>
-      <h1>Find Your <span class="highlight">Dream Car</span><br />At The Best Price</h1>
+      <p class="hero-eyebrow">Trusted Dealership &nbsp;·&nbsp; Quality Guaranteed</p>
+      <h1>The Finest<br /><em>Pre-Owned Vehicles</em></h1>
       <p class="hero-sub">Browse our certified pre-owned vehicles.<br />Transparent pricing, no hidden fees.</p>
 
       <div class="search-box">
@@ -58,7 +58,7 @@
           </select>
         </div>
         <div class="search-group">
-          <label>Fuel</label>
+          <label>Fuel Type</label>
           <select id="filterFuel">
             <option value="">Any Fuel</option>
             <option value="Diesel">Diesel</option>
@@ -66,7 +66,7 @@
             <option value="Hybrid">Hybrid / PHEV</option>
           </select>
         </div>
-        <button class="btn-search" onclick="applyFilters()">Search Cars</button>
+        <button class="btn-search" onclick="applyFilters()">Search</button>
       </div>
     </div>
 
@@ -86,11 +86,10 @@
     <div class="container">
       <div class="section-header">
         <p class="section-tag">Browse Our Fleet</p>
-        <h2>Available <span class="highlight">Inventory</span></h2>
-        <p class="section-sub">All vehicles come with a full inspection report. Contact us for price details.</p>
+        <h2>Available Inventory</h2>
+        <p class="section-sub">All vehicles come with a full inspection report. Contact us for pricing details.</p>
       </div>
 
-      <!-- MAKE FILTER BAR -->
       <div class="filter-bar">
         <button class="filter-btn active" data-make="">All Cars</button>
         <button class="filter-btn" data-make="Mercedes Benz">Mercedes Benz</button>
@@ -99,13 +98,12 @@
         <button class="filter-btn" data-make="Volkswagen">Volkswagen</button>
       </div>
 
-      <!-- MODEL SUB-FILTER (shown when a make is selected) -->
       <div class="model-filter-bar" id="modelFilterBar"></div>
 
       <div class="cars-grid" id="carsGrid"></div>
 
       <div class="no-results hidden" id="noResults">
-        <p>😕 No cars match your filters.</p>
+        <p>No vehicles match your current filters.</p>
         <button class="btn-primary" onclick="resetFilters()">Clear Filters</button>
       </div>
     </div>
@@ -116,36 +114,36 @@
     <div class="container">
       <div class="section-header">
         <p class="section-tag">Why AutoHaus</p>
-        <h2>The Smarter Way to <span class="highlight">Buy a Car</span></h2>
+        <h2>The Smarter Way to Buy</h2>
       </div>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">🔍</div>
+          <div class="feature-icon-line"></div>
           <h3>Full Inspection</h3>
           <p>Every car passes a thorough inspection before listing. What you see is what you get.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">📋</div>
+          <div class="feature-icon-line"></div>
           <h3>Vehicle History</h3>
           <p>Full service history and accident-free documentation provided for every vehicle.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🛡️</div>
+          <div class="feature-icon-line"></div>
           <h3>Accident-Free</h3>
           <p>All our cars are carefully selected — unfallfrei (accident-free) vehicles only.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">💬</div>
+          <div class="feature-icon-line"></div>
           <h3>Personal Service</h3>
           <p>Direct contact with the seller. No middleman. Fast responses and honest communication.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🏦</div>
+          <div class="feature-icon-line"></div>
           <h3>Flexible Payment</h3>
           <p>Negotiable prices and flexible payment arrangements for serious buyers.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🚚</div>
+          <div class="feature-icon-line"></div>
           <h3>Test Drive</h3>
           <p>Test drives available by appointment. Come see the car in person before you decide.</p>
         </div>
@@ -158,8 +156,7 @@
     <div class="container about-grid">
       <div class="about-image">
         <div class="about-img-placeholder">
-          <span>🏢</span>
-          <p>AutoHaus Showroom</p>
+          <span class="about-img-label">AutoHaus Showroom</span>
         </div>
         <div class="about-badge">
           <strong>5★</strong>
@@ -168,14 +165,14 @@
       </div>
       <div class="about-content">
         <p class="section-tag">Our Story</p>
-        <h2>We're More Than Just a <span class="highlight">Car Dealer</span></h2>
+        <h2>More Than Just a Car Dealer</h2>
         <p>At AutoHaus we offer a carefully selected range of quality used vehicles — all accident-free, fully inspected, and sold with complete transparency.</p>
         <p>Each listing includes a full specification sheet, service history, and high-resolution photos so you know exactly what you're buying before you even arrive.</p>
         <ul class="about-list">
-          <li>✅ Accident-free (Unfallfrei) vehicles</li>
-          <li>✅ Full service history provided</li>
-          <li>✅ Test drives available by appointment</li>
-          <li>✅ Fair prices — always negotiable</li>
+          <li>Accident-free (Unfallfrei) vehicles</li>
+          <li>Full service history provided</li>
+          <li>Test drives available by appointment</li>
+          <li>Fair prices — always negotiable</li>
         </ul>
         <a href="#contact" class="btn-primary">Get In Touch</a>
       </div>
@@ -187,25 +184,25 @@
     <div class="container contact-grid">
       <div class="contact-info">
         <p class="section-tag">Get In Touch</p>
-        <h2>Interested in a <span class="highlight">Car?</span></h2>
+        <h2>Interested in a Vehicle?</h2>
         <p>Send us a message for price details, more photos, or to arrange a test drive. We respond within the same day.</p>
         <div class="contact-items">
           <div class="contact-item">
-            <span class="contact-icon">📞</span>
+            <div class="contact-icon-mark">T</div>
             <div>
               <strong>Phone / WhatsApp</strong>
               <p>+1 (323) 456-7890</p>
             </div>
           </div>
           <div class="contact-item">
-            <span class="contact-icon">✉️</span>
+            <div class="contact-icon-mark">E</div>
             <div>
               <strong>Email</strong>
               <p>hello@autohaus.com</p>
             </div>
           </div>
           <div class="contact-item">
-            <span class="contact-icon">🕐</span>
+            <div class="contact-icon-mark">H</div>
             <div>
               <strong>Availability</strong>
               <p>Mon–Sat: 9AM–7PM &nbsp;|&nbsp; Sun: 11AM–5PM</p>
@@ -215,7 +212,7 @@
       </div>
 
       <form class="contact-form" id="contactForm" onsubmit="handleFormSubmit(event)">
-        <h3>Send Us a Message</h3>
+        <h3>Send a Message</h3>
         <div class="form-row">
           <div class="form-group">
             <label>First Name</label>
@@ -250,7 +247,7 @@
           <label>Message</label>
           <textarea rows="4" placeholder="Tell us which car you're interested in, your budget, or any questions..."></textarea>
         </div>
-        <button type="submit" class="btn-primary full-width">Send Message →</button>
+        <button type="submit" class="btn-primary full-width">Send Message</button>
       </form>
     </div>
   </section>
@@ -259,19 +256,18 @@
   <footer class="footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <a href="#" class="nav-logo">
-          <span class="logo-icon">🚗</span>
-          <span>AutoHaus</span>
+        <a href="#" class="nav-logo footer-logo">
+          <span class="logo-mark">AUTOHAUS</span>
         </a>
         <p>Quality used vehicles — all accident-free, fully inspected, sold with transparency.</p>
         <div class="social-links">
-          <a href="#" aria-label="Facebook">f</a>
-          <a href="#" aria-label="Instagram">in</a>
-          <a href="#" aria-label="WhatsApp">w</a>
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="WhatsApp">WA</a>
         </div>
       </div>
       <div class="footer-links">
-        <h4>Quick Links</h4>
+        <h4>Navigation</h4>
         <ul>
           <li><a href="#home">Home</a></li>
           <li><a href="#inventory">Inventory</a></li>
@@ -280,7 +276,7 @@
         </ul>
       </div>
       <div class="footer-links">
-        <h4>Our Cars</h4>
+        <h4>Brands</h4>
         <ul>
           <li><a href="#" onclick="filterByMakeLink('Mercedes Benz')">Mercedes Benz</a></li>
           <li><a href="#" onclick="filterByMakeLink('Audi')">Audi</a></li>

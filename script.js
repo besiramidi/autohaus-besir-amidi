@@ -295,20 +295,20 @@ function renderCars(list) {
       <div class="car-img-real">
         <img src="${encodePath(car.thumb)}" alt="${car.name}" loading="lazy" />
         <span class="car-badge ${car.status}">${badgeLabel(car.status)}</span>
-        <span class="car-photo-count">📷 ${car.images.length}</span>
+        <span class="car-photo-count">${car.images.length} photos</span>
       </div>
       <div class="car-info">
         <div class="car-make-tag">${car.make}</div>
         <h3>${car.year ? car.year + ' ' : ''}${car.name}</h3>
         <div class="car-meta">
-          <span>🛣️ ${car.km}</span>
-          <span>⚡ ${car.power}</span>
-          <span>⛽ ${car.fuel}</span>
-          <span>⚙️ ${car.transmission}</span>
+          <span>${car.km}</span>
+          <span>${car.power}</span>
+          <span>${car.fuel}</span>
+          <span>${car.transmission}</span>
         </div>
         <div class="car-price-row">
-          <span class="car-price-poa">Preis auf Anfrage</span>
-          <button class="btn-details" onclick="event.stopPropagation(); openModal(${car.id})">Details →</button>
+          <span class="car-price-poa">Price on Request</span>
+          <button class="btn-details" onclick="event.stopPropagation(); openModal(${car.id})">View Details</button>
         </div>
       </div>
     </div>
@@ -500,8 +500,8 @@ function openModal(id) {
       </div>
 
       <div class="modal-actions">
-        <button class="btn-primary" onclick="contactCar('${car.name}')">📞 Kontakt / Preis anfragen</button>
-        <button class="btn-outline" onclick="contactCar('${car.name} – Probefahrt')">🚗 Probefahrt buchen</button>
+        <button class="btn-primary" onclick="contactCar('${car.name}')">Inquire / Request Price</button>
+        <button class="btn-outline" onclick="contactCar('${car.name} – Probefahrt')">Book a Test Drive</button>
       </div>
     </div>
   `;
@@ -600,12 +600,12 @@ function contactCar(carName) {
   }
   closeModal();
   document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
-  showToast("✅ Scroll down to fill in the contact form!");
+  showToast("Scroll down to fill in the contact form.");
 }
 
 function handleFormSubmit(event) {
   event.preventDefault();
-  showToast("✅ Message sent! We'll get back to you shortly.");
+  showToast("Message sent. We'll get back to you shortly.");
   event.target.reset();
 }
 
