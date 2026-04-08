@@ -2,6 +2,14 @@
 
 ---
 
+## Update 7 — Test Drive Email Confirmation
+
+- Booking a test drive now sends a confirmation email to the customer
+- Dealer receives a notification email with full booking details (name, email, phone, car, date, time)
+- Emails powered by Resend — configured via `RESEND_API_KEY`, `FROM_EMAIL`, and `DEALER_EMAIL` environment variables
+
+---
+
 ## Update 6 — Bug Fixes (Live Testing)
 
 - Fixed single-result grid leaving empty dark space (`auto-fill` → `auto-fit`)
