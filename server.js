@@ -234,6 +234,7 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
   console.log(`\nAutoHaus server running → http://localhost:${PORT}`);
+  console.log(`  DEBUG: RESEND_API_KEY=${process.env.RESEND_API_KEY ? 're_****' + process.env.RESEND_API_KEY.slice(-4) : 'undefined'}`);
   if (!process.env.RESEND_API_KEY) {
     console.log('  ⚠  RESEND_API_KEY not set — emails will not be sent.');
     console.log('     Set RESEND_API_KEY, FROM_EMAIL, and DEALER_EMAIL to enable.\n');
