@@ -472,6 +472,8 @@ server.listen(PORT, () => {
     console.log(`  ✓  Email provider: Resend (from: ${process.env.FROM_EMAIL || 'FROM_EMAIL not set'})\n`);
   }
   console.log(`  Admin panel: http://localhost:${PORT}/admin`);
+  console.log(`  __dirname: ${__dirname}`);
+  console.log(`  admin.html exists: ${require('fs').existsSync(require('path').join(__dirname, 'admin.html'))}`);
   if (!process.env.ADMIN_PASSWORD) {
     console.log('  ⚠  ADMIN_PASSWORD not set — admin panel login will fail.\n');
   }
