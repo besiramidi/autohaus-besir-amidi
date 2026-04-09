@@ -2,6 +2,18 @@
 
 ---
 
+## Update 10 — Admin Panel & Persistent Data
+
+- New admin panel at `/admin` — password protected
+- **Bookings tab**: view all bookings with stats (total, upcoming, past), cancel any booking to free the slot
+- **Cars tab**: full inventory management — add new cars, remove sold ones
+- Add car form: fill in specs, drag & drop photo upload with live previews
+- Cars and bookings now saved to JSON files — survive server restarts
+- Car inventory loaded dynamically from API — filter bars update automatically when new makes/models are added
+- Set `ADMIN_PASSWORD` in Railway environment variables to enable admin login
+
+---
+
 ## Update 9 — Berlin Timezone Fix
 
 - Past slot detection now uses Europe/Berlin time instead of server UTC — slots hide correctly for German customers
