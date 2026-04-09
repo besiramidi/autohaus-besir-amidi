@@ -143,8 +143,10 @@ const server = http.createServer((req, res) => {
     if (!date) { res.writeHead(400); res.end(JSON.stringify({ error: 'date required' })); return; }
 
     const now         = new Date();
-    const todayStr    = now.toISOString().split('T')[0];
-    const nowMinutes  = now.getHours() * 60 + now.getMinutes();
+    const todayStr    = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+    const berlinTime  = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
+    const [bh, bm]    = berlinTime.split(':').map(Number);
+    const nowMinutes  = bh * 60 + bm;
 
     const slots  = getSlotsForDate(date).map(({ start, end }) => {
       const slotMinutes = parseInt(start.split(':')[0]) * 60;

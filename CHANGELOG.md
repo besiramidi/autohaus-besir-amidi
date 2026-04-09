@@ -2,6 +2,12 @@
 
 ---
 
+## Update 9 — Berlin Timezone Fix
+
+- Past slot detection now uses Europe/Berlin time instead of server UTC — slots hide correctly for German customers
+
+---
+
 ## Update 8 — Smart Slot Availability
 
 - Booked time slots are now tracked per car — booking a BMW at 10:00 does not block an Audi at 10:00
