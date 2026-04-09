@@ -297,7 +297,7 @@ const server = http.createServer((req, res) => {
   // ── Admin: GET /admin ──────────────────────────────────────────────────────
   if (req.method === 'GET' && (req.url === '/admin' || req.url === '/admin/')) {
     fs.readFile(path.join(__dirname, 'admin.html'), (err, data) => {
-      if (err) { res.writeHead(404); res.end('Not found'); return; }
+      if (err) { res.writeHead(404); res.end('Not found v10'); return; }
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(data);
     });
@@ -468,7 +468,7 @@ const server = http.createServer((req, res) => {
   const contentType = MIME[ext] || 'application/octet-stream';
 
   fs.readFile(filePath, (err, data) => {
-    if (err) { res.writeHead(404); res.end('Not found'); return; }
+    if (err) { res.writeHead(404); res.end('Not found v10'); return; }
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(data);
   });
