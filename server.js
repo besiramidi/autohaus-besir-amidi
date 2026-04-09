@@ -448,6 +448,7 @@ const server = http.createServer((req, res) => {
 
   // ── Static files ───────────────────────────────────────────────────────────
   let filePath = req.url === '/' ? '/index.html' : req.url.split('?')[0];
+  if (filePath === '/admin' || filePath === '/admin/') filePath = '/admin.html';
   filePath = path.join(__dirname, decodeURIComponent(filePath));
 
   const ext         = path.extname(filePath).toLowerCase();
