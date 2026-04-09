@@ -172,6 +172,19 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  // ── GET /debug ─────────────────────────────────────────────────────────────
+  if (req.method === 'GET' && req.url === '/debug') {
+    const adminPath = require('path').join(__dirname, 'admin.html');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      __dirname,
+      adminHtmlExists: require('fs').existsSync(adminPath),
+      adminHtmlPath: adminPath,
+      files: require('fs').readdirSync(__dirname).filter(f => !f.startsWith('.') && f !== 'node_modules')
+    }, null, 2));
+    return;
+  }
+
   // ── GET /api/cars ──────────────────────────────────────────────────────────
   if (req.method === 'GET' && req.url === '/api/cars') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
