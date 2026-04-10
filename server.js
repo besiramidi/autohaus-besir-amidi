@@ -1,4 +1,5 @@
 const http    = require('http');
+const https   = require('https');
 const fs      = require('fs');
 const path    = require('path');
 const crypto  = require('crypto');
@@ -23,6 +24,29 @@ function loadJSON(file, fallback) {
 }
 function saveJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+function verifyRecaptcha(token) {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  return new Promise((resolve, reject) => {
+    const postData = `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`;
+    const req = https.request({
+      hostname: 'www.google.com',
+      path:     '/recaptcha/api/siteverify',
+      method:   'POST',
+      headers:  { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData) }
+    }, res => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch { reject(new Error('Invalid reCAPTCHA response')); }
+      });
+    });
+    req.on('error', reject);
+    req.write(postData);
+    req.end();
+  });
 }
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -225,13 +249,28 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { name, email, phone, car, date, time, timeDisplay } = JSON.parse(body);
+        const { name, email, phone, car, date, time, timeDisplay, recaptchaToken } = JSON.parse(body);
         const displayTime = timeDisplay || time;
 
         if (!name || !email || !car || !date || !time) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Missing required fields' }));
           return;
+        }
+
+        // Verify reCAPTCHA
+        if (process.env.RECAPTCHA_SECRET_KEY) {
+          if (!recaptchaToken) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Please complete the reCAPTCHA.' }));
+            return;
+          }
+          const captchaResult = await verifyRecaptcha(recaptchaToken);
+          if (!captchaResult.success) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
+            return;
+          }
         }
 
         const key = slotKey(date, time, car);

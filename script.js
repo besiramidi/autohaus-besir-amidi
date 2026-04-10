@@ -730,6 +730,15 @@ async function submitBooking(event) {
     emailErr.textContent = "";
   }
 
+  const recaptchaToken = grecaptcha.getResponse();
+  const recaptchaErr   = document.getElementById("bfRecaptchaErr");
+  if (!recaptchaToken) {
+    recaptchaErr.textContent = "Please complete the reCAPTCHA.";
+    valid = false;
+  } else {
+    recaptchaErr.textContent = "";
+  }
+
   if (!valid) return;
 
   const btn = document.getElementById("bfSubmit");
@@ -740,7 +749,7 @@ async function submitBooking(event) {
     const res  = await fetch("/api/book", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay })
+      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay, recaptchaToken })
     });
     const data = await res.json();
 
@@ -756,11 +765,13 @@ async function submitBooking(event) {
       showToast(data.error || "Booking failed. Please try again.");
       btn.classList.remove("loading");
       btn.disabled = false;
+      grecaptcha.reset();
     }
   } catch {
     showToast("Connection error. Please try again.");
     btn.classList.remove("loading");
     btn.disabled = false;
+    grecaptcha.reset();
   }
 }
 
