@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AutoHaus Admin</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -239,6 +240,7 @@
         <label>Password</label>
         <input type="password" id="passwordInput" placeholder="Enter admin password" autocomplete="current-password" required>
       </div>
+      <div class="g-recaptcha" data-sitekey="6Le7P7EsAAAAAPdprt4PVsHNOmoxAe4yNsZikH9e" style="margin-bottom:1rem;"></div>
       <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center" id="loginBtn">
         Sign In
       </button>
@@ -462,11 +464,22 @@
     btn.textContent = 'Signing in…';
     err.textContent = '';
 
+    const recaptchaToken = grecaptcha.getResponse();
+    if (!recaptchaToken) {
+      err.textContent = 'Please complete the reCAPTCHA.';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
     try {
       const res  = await fetch('/admin/login', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ password: document.getElementById('passwordInput').value })
+        body:    JSON.stringify({
+          password: document.getElementById('passwordInput').value,
+          recaptchaToken: recaptchaToken
+        })
       });
       const data = await res.json();
       if (res.ok) {
@@ -475,6 +488,7 @@
         err.textContent = data.error || 'Wrong password.';
         btn.disabled    = false;
         btn.textContent = 'Sign In';
+        grecaptcha.reset();
       }
     } catch {
       err.textContent = 'Connection error. Try again.';

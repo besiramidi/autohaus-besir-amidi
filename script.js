@@ -10,14 +10,18 @@ let currentGalleryCar = null;
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("🚗 Initializing AutoHaus...");
   setupNavbar();
   setupHamburger();
   setupContactForm();
 
+  console.log("📡 Loading cars from API...");
   try {
     const res = await fetch('/api/cars');
     cars = await res.json();
-  } catch {
+    console.log("✅ Loaded", cars.length, "cars from API");
+  } catch (error) {
+    console.error("❌ Failed to load cars:", error);
     cars = [];
   }
 
@@ -47,16 +51,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderCars(cars);
+  console.log("🎨 Rendered cars on page");
   setupMakeFilterButtons();
   updateModelFilter();
+  console.log("✅ AutoHaus initialization complete");
 });
 
 // ===== RENDER CARS =====
 function renderCars(list) {
+  console.log("🔄 Rendering", list.length, "cars");
   const grid = document.getElementById("carsGrid");
   const noResults = document.getElementById("noResults");
 
   if (list.length === 0) {
+    console.log("⚠️ No cars to display");
     grid.innerHTML = "";
     noResults.classList.remove("hidden");
     return;
@@ -404,17 +412,53 @@ function handleFormSubmit(event) {
   const emailOk = cfValidate("email", "err-email",
     v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Please enter a valid email.");
 
+  // Check reCAPTCHA
+  const recaptchaToken = grecaptcha.getResponse();
+  if (!recaptchaToken) {
+    alert("Please complete the reCAPTCHA verification.");
+    return;
+  }
+
   if (!firstOk || !lastOk || !emailOk) return;
 
   const btn = document.getElementById("cfSubmit");
   btn.classList.add("loading");
   btn.disabled = true;
 
-  setTimeout(() => {
+  // Send form data to server
+  const formData = {
+    firstName:  document.getElementById("cfFirstName").value.trim(),
+    lastName:   document.getElementById("cfLastName").value.trim(),
+    email:      document.getElementById("cfEmail").value.trim(),
+    phone:      document.getElementById("cfPhone").value.trim(),
+    interest:   document.getElementById("cfInterest").value,
+    message:    document.getElementById("cfMessage").value.trim(),
+    recaptchaToken: recaptchaToken
+  };
+
+  fetch("/api/contact", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(formData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.ok) {
+      showSuccessState();
+    } else {
+      alert(data.error || "Failed to send message. Please try again.");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+      grecaptcha.reset();
+    }
+  })
+  .catch(err => {
+    console.error("Contact form error:", err);
+    alert("Connection error. Please try again.");
     btn.classList.remove("loading");
     btn.disabled = false;
-    showSuccessState();
-  }, 1400);
+    grecaptcha.reset();
+  });
 }
 
 function showSuccessState() {
@@ -448,6 +492,10 @@ function resetContactForm() {
       f.classList.remove("has-error", "is-valid");
     });
     document.querySelectorAll(".cf-error").forEach(e => e.textContent = "");
+    // Reset reCAPTCHA
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.reset();
+    }
   }, 400);
 }
 
@@ -523,6 +571,7 @@ let calYear, calMonth;
 
 // ── Open / Close ──────────────────────────────────────────────────────
 function openBooking(carName) {
+  console.log("📅 Opening booking modal for:", carName);
   bookingCar         = carName;
   bookingDate        = "";
   bookingTime        = "";
@@ -540,6 +589,7 @@ function openBooking(carName) {
   document.getElementById("bookingProgress").style.display = "";
   document.getElementById("bookingOverlay").classList.add("open");
   document.body.style.overflow = "hidden";
+  console.log("✅ Booking modal opened, Panel 1 displayed");
 }
 
 function closeBooking() {
@@ -549,6 +599,7 @@ function closeBooking() {
 
 // ── Step navigation ───────────────────────────────────────────────────
 function bookingGoTo(step) {
+  console.log("🔄 Booking navigation: Moving to step", step);
   for (let i = 1; i <= 4; i++) {
     const panel = document.getElementById("bPanel" + i);
     if (panel) panel.classList.toggle("hidden", i !== step);
@@ -575,6 +626,7 @@ function bookingGoTo(step) {
       });
     });
   }
+  console.log("✅ Now showing Panel", step);
 }
 
 // ── Calendar ──────────────────────────────────────────────────────────
@@ -629,6 +681,7 @@ function calNav(dir) {
 }
 
 async function selectDate(dateStr) {
+  console.log("📆 Date selected:", dateStr);
   bookingDate = dateStr;
   renderCalendar();
 
@@ -637,6 +690,7 @@ async function selectDate(dateStr) {
     DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] + " " + d.getDate();
 
   bookingGoTo(2);
+  console.log("⏰ Transitioning to Panel 2 (time slots)");
 
   // Show loading
   document.getElementById("timeSlots").innerHTML =
@@ -645,8 +699,10 @@ async function selectDate(dateStr) {
   try {
     const res   = await fetch(`/api/slots?date=${dateStr}&car=${encodeURIComponent(bookingCar)}`);
     const slots = await res.json();
+    console.log("✅ Time slots loaded:", slots.length, "slots available");
     renderTimeSlots(slots);
-  } catch {
+  } catch (error) {
+    console.error("❌ Error loading time slots:", error);
     document.getElementById("timeSlots").innerHTML =
       `<p class="slots-empty">Could not load slots. Please try again.</p>`;
   }
@@ -674,6 +730,7 @@ function renderTimeSlots(slots) {
 }
 
 function selectTime(start, end) {
+  console.log("⏱️  Time slot selected:", start, "-", end);
   bookingTime        = start;
   bookingTimeDisplay = `${start} – ${end}`;
 
@@ -694,7 +751,10 @@ function selectTime(start, end) {
   `;
 
   // Small delay so user sees the selection before transitioning
-  setTimeout(() => bookingGoTo(3), 160);
+  setTimeout(() => {
+    console.log("✅ Proceeding to Panel 3 (confirmation form)");
+    bookingGoTo(3);
+  }, 160);
 }
 
 // ── Form submission ───────────────────────────────────────────────────
@@ -730,12 +790,27 @@ async function submitBooking(event) {
     emailErr.textContent = "";
   }
 
-  const recaptchaToken = grecaptcha.getResponse();
-  const recaptchaErr   = document.getElementById("bfRecaptchaErr");
+  // Safe reCAPTCHA handling
+  let recaptchaToken = "";
+  const recaptchaErr = document.getElementById("bfRecaptchaErr");
+  console.log("🔍 Checking reCAPTCHA...");
+  try {
+    if (typeof grecaptcha !== "undefined" && grecaptcha) {
+      recaptchaToken = grecaptcha.getResponse();
+      console.log("🔍 reCAPTCHA token:", recaptchaToken ? "PRESENT" : "EMPTY");
+    } else {
+      console.log("🔍 grecaptcha not loaded");
+    }
+  } catch (error) {
+    console.error("🔍 reCAPTCHA error:", error);
+  }
+
   if (!recaptchaToken) {
+    console.log("❌ No reCAPTCHA token - user didn't complete reCAPTCHA");
     recaptchaErr.textContent = "Please complete the reCAPTCHA.";
     valid = false;
   } else {
+    console.log("✅ reCAPTCHA token obtained");
     recaptchaErr.textContent = "";
   }
 
@@ -765,13 +840,17 @@ async function submitBooking(event) {
       showToast(data.error || "Booking failed. Please try again.");
       btn.classList.remove("loading");
       btn.disabled = false;
-      grecaptcha.reset();
+      if (typeof grecaptcha !== "undefined" && grecaptcha) {
+        grecaptcha.reset();
+      }
     }
   } catch {
     showToast("Connection error. Please try again.");
     btn.classList.remove("loading");
     btn.disabled = false;
-    grecaptcha.reset();
+    if (typeof grecaptcha !== "undefined" && grecaptcha) {
+      grecaptcha.reset();
+    }
   }
 }
 

@@ -6,11 +6,15 @@ const crypto  = require('crypto');
 const busboy  = require('busboy');
 const { Resend } = require('resend');
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 // ── Paths ─────────────────────────────────────────────────────────────────────
-const DATA_DIR      = path.join(__dirname, 'data');
-const CARS_FILE     = path.join(DATA_DIR, 'cars.json');
-const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json');
-const UPLOADS_DIR   = path.join(__dirname, 'images', 'uploads');
+const DATA_DIR        = path.join(__dirname, 'data');
+const CARS_FILE       = path.join(DATA_DIR, 'cars.json');
+const BOOKINGS_FILE   = path.join(DATA_DIR, 'bookings.json');
+const SESSIONS_FILE   = path.join(DATA_DIR, 'sessions.json');
+const UPLOADS_DIR     = path.join(__dirname, 'images', 'uploads');
 
 // Ensure directories exist
 [DATA_DIR, UPLOADS_DIR].forEach(dir => {
@@ -28,6 +32,7 @@ function saveJSON(file, data) {
 
 function verifyRecaptcha(token) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
+  console.log('🔍 Verifying reCAPTCHA token:', token ? token.substring(0, 20) + '...' : 'NO TOKEN');
   return new Promise((resolve, reject) => {
     const postData = `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`;
     const req = https.request({
@@ -39,7 +44,11 @@ function verifyRecaptcha(token) {
       let data = '';
       res.on('data', chunk => { data += chunk; });
       res.on('end', () => {
-        try { resolve(JSON.parse(data)); }
+        try {
+          const result = JSON.parse(data);
+          console.log('🔍 reCAPTCHA response:', { success: result.success, 'error-codes': result['error-codes'] });
+          resolve(result);
+        }
         catch { reject(new Error('Invalid reCAPTCHA response')); }
       });
     });
@@ -72,12 +81,46 @@ bookingsDB.forEach(b => {
 });
 
 // ── Admin sessions ────────────────────────────────────────────────────────────
-const adminSessions = new Set();
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+// Map of token → expiry timestamp, persisted to disk
+let adminSessions = (() => {
+  const raw = loadJSON(SESSIONS_FILE, {});
+  const now = Date.now();
+  // Drop already-expired sessions on load
+  const valid = {};
+  for (const [token, exp] of Object.entries(raw)) {
+    if (exp > now) valid[token] = exp;
+  }
+  return valid;
+})();
+
+function saveAdminSessions() {
+  saveJSON(SESSIONS_FILE, adminSessions);
+}
+
+function addAdminSession(token) {
+  adminSessions[token] = Date.now() + SESSION_TTL_MS;
+  saveAdminSessions();
+}
+
+function removeAdminSession(token) {
+  delete adminSessions[token];
+  saveAdminSessions();
+}
+
+function isValidSession(token) {
+  if (!token) return false;
+  const exp = adminSessions[token];
+  if (!exp) return false;
+  if (exp <= Date.now()) { removeAdminSession(token); return false; }
+  return true;
+}
 
 function isAdmin(req) {
   const cookie = req.headers.cookie || '';
   const match  = cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
-  return match && adminSessions.has(match[1]);
+  return match && isValidSession(match[1]);
 }
 
 function getAdminToken(req) {
@@ -85,6 +128,16 @@ function getAdminToken(req) {
   const match  = cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
   return match ? match[1] : null;
 }
+
+// Purge expired sessions once per hour
+setInterval(() => {
+  const now = Date.now();
+  let changed = false;
+  for (const [token, exp] of Object.entries(adminSessions)) {
+    if (exp <= now) { delete adminSessions[token]; changed = true; }
+  }
+  if (changed) saveAdminSessions();
+}, 60 * 60 * 1000);
 
 // ── Availability ──────────────────────────────────────────────────────────────
 function getSlotsForDate(dateStr) {
@@ -191,23 +244,26 @@ const MIME = {
 
 // ── HTTP Server ───────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
+  // ── HTTPS redirect (production only) ──────────────────────────────────────
+  if (process.env.NODE_ENV === 'production' &&
+      req.headers['x-forwarded-proto'] === 'http') {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+    return;
+  }
+
+  // ── Security headers ───────────────────────────────────────────────────────
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
-
-  // ── GET /debug ─────────────────────────────────────────────────────────────
-  if (req.method === 'GET' && req.url === '/debug') {
-    const adminPath = require('path').join(__dirname, 'admin.html');
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      __dirname,
-      adminHtmlExists: require('fs').existsSync(adminPath),
-      adminHtmlPath: adminPath,
-      files: require('fs').readdirSync(__dirname).filter(f => !f.startsWith('.') && f !== 'node_modules')
-    }, null, 2));
-    return;
-  }
 
   // ── GET /api/cars ──────────────────────────────────────────────────────────
   if (req.method === 'GET' && req.url === '/api/cars') {
@@ -260,17 +316,22 @@ const server = http.createServer((req, res) => {
 
         // Verify reCAPTCHA
         if (process.env.RECAPTCHA_SECRET_KEY) {
+          console.log('🔒 reCAPTCHA verification required');
           if (!recaptchaToken) {
+            console.log('❌ No reCAPTCHA token provided');
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Please complete the reCAPTCHA.' }));
             return;
           }
+          console.log('✅ reCAPTCHA token received, verifying...');
           const captchaResult = await verifyRecaptcha(recaptchaToken);
           if (!captchaResult.success) {
+            console.log('❌ reCAPTCHA verification failed');
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
             return;
           }
+          console.log('✅ reCAPTCHA verification successful');
         }
 
         const key = slotKey(date, time, car);
@@ -347,14 +408,36 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/admin/login') {
     let body = '';
     req.on('data', c => { body += c; });
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
-        const { password } = JSON.parse(body);
+        const { password, recaptchaToken } = JSON.parse(body);
+
+        // Verify reCAPTCHA
+        if (process.env.RECAPTCHA_SECRET_KEY) {
+          console.log('🔒 Admin login: reCAPTCHA verification required');
+          if (!recaptchaToken) {
+            console.log('❌ Admin login: No reCAPTCHA token provided');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Please complete the reCAPTCHA.' }));
+            return;
+          }
+          console.log('✅ Admin login: reCAPTCHA token received, verifying...');
+          const captchaResult = await verifyRecaptcha(recaptchaToken);
+          if (!captchaResult.success) {
+            console.log('❌ Admin login: reCAPTCHA verification failed');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
+            return;
+          }
+          console.log('✅ Admin login: reCAPTCHA verification successful');
+        }
+
         if (password && password === process.env.ADMIN_PASSWORD) {
           const token = crypto.randomBytes(32).toString('hex');
-          adminSessions.add(token);
+          addAdminSession(token);
+          const isSecure = process.env.NODE_ENV === 'production';
           res.writeHead(200, {
-            'Set-Cookie': `admin_token=${token}; Path=/; HttpOnly; SameSite=Strict`,
+            'Set-Cookie': `admin_token=${token}; Path=/; HttpOnly; SameSite=Strict${isSecure ? '; Secure' : ''}`,
             'Content-Type': 'application/json'
           });
           res.end(JSON.stringify({ ok: true }));
@@ -373,7 +456,7 @@ const server = http.createServer((req, res) => {
   // ── Admin: POST /admin/logout ──────────────────────────────────────────────
   if (req.method === 'POST' && req.url === '/admin/logout') {
     const token = getAdminToken(req);
-    if (token) adminSessions.delete(token);
+    if (token) removeAdminSession(token);
     res.writeHead(200, {
       'Set-Cookie': 'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
       'Content-Type': 'application/json'
@@ -495,6 +578,89 @@ const server = http.createServer((req, res) => {
     saveJSON(CARS_FILE, carsDB);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  // ── Contact Form: POST /api/contact ────────────────────────────────────────
+  if (req.method === 'POST' && req.url === '/api/contact') {
+    let body = '';
+    req.on('data', c => { body += c; });
+    req.on('end', async () => {
+      try {
+        const { firstName, lastName, email, phone, interest, message, recaptchaToken } = JSON.parse(body);
+
+        // Basic validation
+        if (!firstName || !lastName || !email || !message) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Please fill in all required fields.' }));
+          return;
+        }
+
+        // Verify reCAPTCHA
+        if (process.env.RECAPTCHA_SECRET_KEY) {
+          console.log('🔒 Contact form: reCAPTCHA verification required');
+          if (!recaptchaToken) {
+            console.log('❌ Contact form: No reCAPTCHA token provided');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Please complete the reCAPTCHA.' }));
+            return;
+          }
+          console.log('✅ Contact form: reCAPTCHA token received, verifying...');
+          const captchaResult = await verifyRecaptcha(recaptchaToken);
+          if (!captchaResult.success) {
+            console.log('❌ Contact form: reCAPTCHA verification failed');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
+            return;
+          }
+          console.log('✅ Contact form: reCAPTCHA verification successful');
+        }
+
+        // Send email notification
+        try {
+          const contactData = {
+            firstName,
+            lastName,
+            email,
+            phone: phone || 'Not provided',
+            interest: interest || 'General Inquiry',
+            message,
+            timestamp: new Date().toISOString()
+          };
+
+          const emailHtml = `
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+            <p><strong>Interest:</strong> ${interest || 'General Inquiry'}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            <hr>
+            <p><small>Sent at: ${contactData.timestamp}</small></p>
+          `;
+
+          await resend.emails.send({
+            from:    process.env.FROM_EMAIL,
+            to:      process.env.DEALER_EMAIL,
+            subject: `AutoHaus Contact: ${interest || 'General Inquiry'} - ${firstName} ${lastName}`,
+            html:    emailHtml
+          });
+
+          console.log('📧 Contact form email sent successfully');
+        } catch (emailErr) {
+          console.error('❌ Contact form email failed:', emailErr.message);
+          // Don't fail the request if email fails, just log it
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, message: 'Message sent successfully!' }));
+      } catch (err) {
+        console.error('Contact form error:', err.message);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Server error. Please try again.' }));
+      }
+    });
     return;
   }
 
