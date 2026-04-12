@@ -10,11 +10,10 @@ const { Resend } = require('resend');
 require('dotenv').config();
 
 // ── Paths ─────────────────────────────────────────────────────────────────────
-const DATA_DIR        = process.env.DATA_DIR    || path.join(__dirname, 'data');
-const UPLOADS_DIR     = process.env.UPLOADS_DIR || path.join(__dirname, 'images', 'uploads');
-const CARS_FILE       = path.join(DATA_DIR, 'cars.json');
-const BOOKINGS_FILE   = path.join(DATA_DIR, 'bookings.json');
-const SESSIONS_FILE   = path.join(DATA_DIR, 'sessions.json');
+const DATA_DIR      = path.join(__dirname, 'data');
+const CARS_FILE     = path.join(DATA_DIR, 'cars.json');
+const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json');
+const UPLOADS_DIR   = path.join(__dirname, 'images', 'uploads');
 
 // Ensure directories exist
 [DATA_DIR, UPLOADS_DIR].forEach(dir => {
@@ -81,46 +80,12 @@ bookingsDB.forEach(b => {
 });
 
 // ── Admin sessions ────────────────────────────────────────────────────────────
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-
-// Map of token → expiry timestamp, persisted to disk
-let adminSessions = (() => {
-  const raw = loadJSON(SESSIONS_FILE, {});
-  const now = Date.now();
-  // Drop already-expired sessions on load
-  const valid = {};
-  for (const [token, exp] of Object.entries(raw)) {
-    if (exp > now) valid[token] = exp;
-  }
-  return valid;
-})();
-
-function saveAdminSessions() {
-  saveJSON(SESSIONS_FILE, adminSessions);
-}
-
-function addAdminSession(token) {
-  adminSessions[token] = Date.now() + SESSION_TTL_MS;
-  saveAdminSessions();
-}
-
-function removeAdminSession(token) {
-  delete adminSessions[token];
-  saveAdminSessions();
-}
-
-function isValidSession(token) {
-  if (!token) return false;
-  const exp = adminSessions[token];
-  if (!exp) return false;
-  if (exp <= Date.now()) { removeAdminSession(token); return false; }
-  return true;
-}
+const adminSessions = new Set();
 
 function isAdmin(req) {
   const cookie = req.headers.cookie || '';
   const match  = cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
-  return match && isValidSession(match[1]);
+  return match && adminSessions.has(match[1]);
 }
 
 function getAdminToken(req) {
@@ -128,16 +93,6 @@ function getAdminToken(req) {
   const match  = cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
   return match ? match[1] : null;
 }
-
-// Purge expired sessions once per hour
-setInterval(() => {
-  const now = Date.now();
-  let changed = false;
-  for (const [token, exp] of Object.entries(adminSessions)) {
-    if (exp <= now) { delete adminSessions[token]; changed = true; }
-  }
-  if (changed) saveAdminSessions();
-}, 60 * 60 * 1000);
 
 // ── Availability ──────────────────────────────────────────────────────────────
 function getSlotsForDate(dateStr) {
@@ -244,26 +199,23 @@ const MIME = {
 
 // ── HTTP Server ───────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
-  // ── HTTPS redirect (production only) ──────────────────────────────────────
-  if (process.env.NODE_ENV === 'production' &&
-      req.headers['x-forwarded-proto'] === 'http') {
-    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-    res.end();
-    return;
-  }
-
-  // ── Security headers ───────────────────────────────────────────────────────
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  if (process.env.NODE_ENV === 'production') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  }
-
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+  // ── GET /debug ─────────────────────────────────────────────────────────────
+  if (req.method === 'GET' && req.url === '/debug') {
+    const adminPath = require('path').join(__dirname, 'admin.html');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      __dirname,
+      adminHtmlExists: require('fs').existsSync(adminPath),
+      adminHtmlPath: adminPath,
+      files: require('fs').readdirSync(__dirname).filter(f => !f.startsWith('.') && f !== 'node_modules')
+    }, null, 2));
+    return;
+  }
 
   // ── GET /api/cars ──────────────────────────────────────────────────────────
   if (req.method === 'GET' && req.url === '/api/cars') {
@@ -434,10 +386,9 @@ const server = http.createServer((req, res) => {
 
         if (password && password === process.env.ADMIN_PASSWORD) {
           const token = crypto.randomBytes(32).toString('hex');
-          addAdminSession(token);
-          const isSecure = process.env.NODE_ENV === 'production';
+          adminSessions.add(token);
           res.writeHead(200, {
-            'Set-Cookie': `admin_token=${token}; Path=/; HttpOnly; SameSite=Strict${isSecure ? '; Secure' : ''}`,
+            'Set-Cookie': `admin_token=${token}; Path=/; HttpOnly; SameSite=Strict`,
             'Content-Type': 'application/json'
           });
           res.end(JSON.stringify({ ok: true }));
@@ -456,7 +407,7 @@ const server = http.createServer((req, res) => {
   // ── Admin: POST /admin/logout ──────────────────────────────────────────────
   if (req.method === 'POST' && req.url === '/admin/logout') {
     const token = getAdminToken(req);
-    if (token) removeAdminSession(token);
+    if (token) adminSessions.delete(token);
     res.writeHead(200, {
       'Set-Cookie': 'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
       'Content-Type': 'application/json'
