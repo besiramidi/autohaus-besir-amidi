@@ -173,6 +173,14 @@
     }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+    /* Features checkboxes */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .feature-category { border: 1px solid var(--border); padding: 16px; border-radius: 4px; }
+    .feature-category h4 { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; margin-top: 0; }
+    .feature-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .feature-item { display: flex; align-items: center; gap: 8px; font-size: .85rem; }
+    .feature-item input[type="checkbox"] { margin: 0; }
+
     /* Upload zone */
     .upload-zone {
       border: 2px dashed var(--border); padding: 32px 20px; text-align: center;
@@ -254,6 +262,10 @@
   <div class="topbar">
     <div class="topbar-logo"><span>AUTO</span>HAUS <span style="color:var(--muted);letter-spacing:.1em;font-size:.7rem">ADMIN</span></div>
     <div class="topbar-right">
+      <select id="langSelect" onchange="changeLanguage(this.value)" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px;">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+      </select>
       <span class="topbar-badge" id="topbarUser"></span>
       <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
     </div>
@@ -321,26 +333,32 @@
         <div class="form-section">
           <div class="form-section-title">Basic Information</div>
           <div class="field">
-            <label>Car Name *</label>
-            <input type="text" name="name" placeholder="e.g. BMW M3 Competition" required>
+            <label id="carNameLabel">Car Name *</label>
+            <input type="text" name="name" id="nameInput" placeholder="Auto-filled from Make/Model/Year" required readonly>
           </div>
           <div class="form-row">
             <div class="field">
-              <label>Make *</label>
-              <input type="text" name="make" placeholder="e.g. BMW" required>
+              <label id="makeLabel">Make *</label>
+              <select name="make" id="makeSelect" required>
+                <option value="">Select Make</option>
+              </select>
             </div>
             <div class="field">
-              <label>Model *</label>
-              <input type="text" name="model" placeholder="e.g. M3">
+              <label id="modelLabel">Model *</label>
+              <select name="model" id="modelSelect" required>
+                <option value="">Select Model</option>
+              </select>
             </div>
           </div>
           <div class="form-row">
             <div class="field">
-              <label>Year</label>
-              <input type="number" name="year" placeholder="e.g. 2021" min="1990" max="2030">
+              <label id="yearLabel">Year</label>
+              <select name="year" id="yearSelect">
+                <option value="">Select Year</option>
+              </select>
             </div>
             <div class="field">
-              <label>Status</label>
+              <label id="statusLabel">Status</label>
               <select name="status">
                 <option value="used">Used</option>
                 <option value="certified">Certified</option>
@@ -353,18 +371,18 @@
           <div class="form-section-title">Specs</div>
           <div class="form-row">
             <div class="field">
-              <label>Mileage (km)</label>
+              <label id="mileageLabel">Mileage (km)</label>
               <input type="text" name="km" placeholder="e.g. 45.000 km">
             </div>
             <div class="field">
-              <label>Power</label>
-              <input type="text" name="power" placeholder="e.g. 280 kW (381 PS)">
+              <label id="powerLabel">Power</label>
+              <input type="text" name="power" id="powerInput" placeholder="e.g. 280 kW (381 PS)">
             </div>
           </div>
           <div class="form-row">
             <div class="field">
-              <label>Fuel Type</label>
-              <select name="fuel">
+              <label id="fuelLabel">Fuel Type</label>
+              <select name="fuel" id="fuelSelect">
                 <option value="Benzin">Benzin</option>
                 <option value="Diesel">Diesel</option>
                 <option value="Hybrid">Hybrid</option>
@@ -373,7 +391,7 @@
               </select>
             </div>
             <div class="field">
-              <label>Transmission</label>
+              <label id="transmissionLabel">Transmission</label>
               <select name="transmission">
                 <option value="Automatik">Automatik</option>
                 <option value="Schaltgetriebe">Schaltgetriebe</option>
@@ -383,13 +401,16 @@
           </div>
           <div class="form-row">
             <div class="field">
-              <label>Engine</label>
-              <input type="text" name="engine" placeholder="e.g. 2.993 cm³ · 6 Zyl.">
+              <label id="engineLabel">Engine</label>
+              <input type="text" name="engine" id="engineInput" placeholder="e.g. 2.993 cm³ · 6 Zyl.">
             </div>
             <div class="field">
-              <label>Condition</label>
+              <label id="conditionLabel">Condition</label>
               <input type="text" name="condition" placeholder="e.g. Gebrauchtfahrzeug">
             </div>
+          </div>
+          <div style="margin-top:12px">
+            <button type="button" class="btn btn-gold btn-sm" onclick="autoFillSpecs()" id="autoFillBtn">Auto-fill Engine & Power</button>
           </div>
         </div>
 
@@ -408,15 +429,97 @@
         </div>
 
         <div class="form-section">
-          <div class="form-section-title">Features</div>
-          <div class="field">
-            <label>Features — one per line</label>
-            <textarea name="features" placeholder="Navigationssystem&#10;Apple CarPlay&#10;Sitzheizung&#10;..."></textarea>
+          <div class="form-section-title" id="featuresTitle">Features</div>
+          <div class="features-grid">
+            <div class="feature-category">
+              <h4>Comfort & Convenience</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Air conditioning"> Air conditioning</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Heating"> Heating</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Cruise control"> Cruise control</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Power windows/locks/mirrors"> Power windows/locks/mirrors</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Keyless entry and start"> Keyless entry and start</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Sunroof/moonroof"> Sunroof/moonroof</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Adjustable seats"> Adjustable seats</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Leather upholstery"> Leather upholstery</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Ambient lighting"> Ambient lighting</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Wireless phone charging"> Wireless phone charging</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="USB ports"> USB ports</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Bluetooth connectivity"> Bluetooth connectivity</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Apple CarPlay/Android Auto"> Apple CarPlay/Android Auto</label>
+              </div>
+            </div>
+            <div class="feature-category">
+              <h4>Safety & Driver Assistance</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Anti-lock brakes (ABS)"> Anti-lock brakes (ABS)</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Electronic stability control"> Electronic stability control</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Traction control"> Traction control</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Airbags"> Airbags</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Backup camera"> Backup camera</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Parking sensors"> Parking sensors</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Blind spot monitoring"> Blind spot monitoring</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Lane departure warning"> Lane departure warning</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Lane keeping assist"> Lane keeping assist</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Automatic emergency braking"> Automatic emergency braking</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Forward collision warning"> Forward collision warning</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Rear cross-traffic alert"> Rear cross-traffic alert</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Adaptive headlights"> Adaptive headlights</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Rain-sensing wipers"> Rain-sensing wipers</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Tire pressure monitoring"> Tire pressure monitoring</label>
+              </div>
+            </div>
+            <div class="feature-category">
+              <h4>Infotainment & Technology</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Navigation system"> Navigation system</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Touchscreen display"> Touchscreen display</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Voice control"> Voice control</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Premium audio system"> Premium audio system</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Satellite radio"> Satellite radio</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Wi-Fi hotspot"> Wi-Fi hotspot</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Head-up display"> Head-up display</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Digital instrument cluster"> Digital instrument cluster</label>
+              </div>
+            </div>
+            <div class="feature-category">
+              <h4>Performance & Handling</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Automatic transmission"> Automatic transmission</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Manual transmission"> Manual transmission</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="All-wheel drive"> All-wheel drive</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Turbocharged"> Turbocharged</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Sport suspension"> Sport suspension</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Performance tires"> Performance tires</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Alloy wheels"> Alloy wheels</label>
+              </div>
+            </div>
+            <div class="feature-category">
+              <h4>Exterior & Utility</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Roof rack"> Roof rack</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Tow hitch"> Tow hitch</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Mud flaps"> Mud flaps</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Running boards"> Running boards</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Tinted windows"> Tinted windows</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Body kit"> Body kit</label>
+              </div>
+            </div>
+            <div class="feature-category">
+              <h4>Interior & Storage</h4>
+              <div class="feature-list">
+                <label class="feature-item"><input type="checkbox" name="features" value="Folding seats"> Folding seats</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Console storage"> Console storage</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Overhead compartments"> Overhead compartments</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Cup holders"> Cup holders</label>
+                <label class="feature-item"><input type="checkbox" name="features" value="Glove compartment"> Glove compartment</label>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="form-section">
-          <div class="form-section-title">Photos</div>
+          <div class="form-section-title" id="photosTitle">Photos</div>
           <div class="upload-zone" id="uploadZone">
             <input type="file" id="photoInput" accept="image/*" multiple onchange="handleFiles(this.files)">
             <div class="upload-zone-icon">📷</div>
@@ -430,7 +533,7 @@
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px">
-          <button type="button" class="btn btn-outline" onclick="closeAddCar()">Cancel</button>
+          <button type="button" class="btn btn-outline" onclick="closeAddCar()" id="cancelBtn">Cancel</button>
           <button type="submit" class="btn btn-gold" id="submitCarBtn">Save Car</button>
         </div>
 
@@ -443,6 +546,267 @@
 <div id="toast"></div>
 
 <script>
+  // ── Car Data ─────────────────────────────────────────────────────────────────
+  let carData = { makes: [], years: [] };
+  let currentLang = 'de';
+
+  const translations = {
+    en: {
+      'Car Name': 'Car Name',
+      'Make': 'Make',
+      'Model': 'Model',
+      'Year': 'Year',
+      'Status': 'Status',
+      'Mileage (km)': 'Mileage (km)',
+      'Power': 'Power',
+      'Fuel Type': 'Fuel Type',
+      'Transmission': 'Transmission',
+      'Engine': 'Engine',
+      'Condition': 'Condition',
+      'Features': 'Features',
+      'Photos': 'Photos',
+      'Cancel': 'Cancel',
+      'Save Car': 'Save Car',
+      'Auto-fill Engine & Power': 'Auto-fill Engine & Power',
+      'Select Make': 'Select Make',
+      'Select Model': 'Select Model',
+      'Select Year': 'Select Year',
+      'Used': 'Used',
+      'Certified': 'Certified',
+      'Benzin': 'Gasoline',
+      'Diesel': 'Diesel',
+      'Hybrid': 'Hybrid',
+      'Elektro': 'Electric',
+      'Auf Anfrage': 'On Request',
+      'Automatik': 'Automatic',
+      'Schaltgetriebe': 'Manual',
+      'Auto-filled from Make/Model/Year': 'Auto-filled from Make/Model/Year'
+    },
+    de: {
+      'Car Name': 'Auto Name',
+      'Make': 'Marke',
+      'Model': 'Modell',
+      'Year': 'Jahr',
+      'Status': 'Status',
+      'Mileage (km)': 'Kilometerstand (km)',
+      'Power': 'Leistung',
+      'Fuel Type': 'Kraftstoffart',
+      'Transmission': 'Getriebe',
+      'Engine': 'Motor',
+      'Condition': 'Zustand',
+      'Features': 'Ausstattung',
+      'Photos': 'Fotos',
+      'Cancel': 'Abbrechen',
+      'Save Car': 'Auto Speichern',
+      'Auto-fill Engine & Power': 'Motor & Leistung automatisch ausfüllen',
+      'Select Make': 'Marke auswählen',
+      'Select Model': 'Modell auswählen',
+      'Select Year': 'Jahr auswählen',
+      'Used': 'Gebraucht',
+      'Certified': 'Geprüft',
+      'Benzin': 'Benzin',
+      'Diesel': 'Diesel',
+      'Hybrid': 'Hybrid',
+      'Elektro': 'Elektro',
+      'Auf Anfrage': 'Auf Anfrage',
+      'Automatik': 'Automatik',
+      'Schaltgetriebe': 'Schaltgetriebe',
+      'Auto-filled from Make/Model/Year': 'Automatisch aus Marke/Modell/Jahr ausgefüllt'
+    }
+  };
+
+  function changeLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    // Update labels
+    document.getElementById('carNameLabel').textContent = t['Car Name'] + ' *';
+    document.getElementById('makeLabel').textContent = t['Make'] + ' *';
+    document.getElementById('modelLabel').textContent = t['Model'] + ' *';
+    document.getElementById('yearLabel').textContent = t['Year'];
+    document.getElementById('statusLabel').textContent = t['Status'];
+    document.getElementById('mileageLabel').textContent = t['Mileage (km)'];
+    document.getElementById('powerLabel').textContent = t['Power'];
+    document.getElementById('fuelLabel').textContent = t['Fuel Type'];
+    document.getElementById('transmissionLabel').textContent = t['Transmission'];
+    document.getElementById('engineLabel').textContent = t['Engine'];
+    document.getElementById('conditionLabel').textContent = t['Condition'];
+    document.getElementById('featuresTitle').textContent = t['Features'];
+    document.getElementById('photosTitle').textContent = t['Photos'];
+    document.getElementById('cancelBtn').textContent = t['Cancel'];
+    document.getElementById('submitCarBtn').textContent = t['Save Car'];
+    document.getElementById('autoFillBtn').textContent = t['Auto-fill Engine & Power'];
+
+    // Update placeholders
+    document.getElementById('nameInput').placeholder = t['Auto-filled from Make/Model/Year'];
+
+    // Update select options
+    const makeSelect = document.getElementById('makeSelect');
+    makeSelect.options[0].text = t['Select Make'];
+
+    const modelSelect = document.getElementById('modelSelect');
+    modelSelect.options[0].text = t['Select Model'];
+
+    const yearSelect = document.getElementById('yearSelect');
+    yearSelect.options[0].text = t['Select Year'];
+
+    const statusSelect = document.querySelector('select[name="status"]');
+    statusSelect.options[0].text = t['Used'];
+    statusSelect.options[1].text = t['Certified'];
+
+    const fuelSelect = document.getElementById('fuelSelect');
+    fuelSelect.options[0].text = t['Benzin'];
+    fuelSelect.options[1].text = t['Diesel'];
+    fuelSelect.options[2].text = t['Hybrid'];
+    fuelSelect.options[3].text = t['Elektro'];
+    fuelSelect.options[4].text = t['Auf Anfrage'];
+
+    const transmissionSelect = document.querySelector('select[name="transmission"]');
+    transmissionSelect.options[0].text = t['Automatik'];
+    transmissionSelect.options[1].text = t['Schaltgetriebe'];
+    transmissionSelect.options[2].text = t['Auf Anfrage'];
+  }
+
+  async function loadCarData() {
+    try {
+      const res = await fetch('/car_data.json');
+      carData = await res.json();
+      populateMakes();
+      populateYears();
+      changeLanguage(currentLang);
+    } catch (error) {
+      console.error('Failed to load car data:', error);
+    }
+  }
+
+  function populateMakes() {
+    const makeSelect = document.getElementById('makeSelect');
+    carData.makes.forEach(make => {
+      const option = document.createElement('option');
+      option.value = make.name;
+      option.textContent = make.name;
+      makeSelect.appendChild(option);
+    });
+  }
+
+  function populateYears() {
+    const yearSelect = document.getElementById('yearSelect');
+    carData.years.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    });
+  }
+
+  function onMakeChange() {
+    const makeSelect = document.getElementById('makeSelect');
+    const modelSelect = document.getElementById('modelSelect');
+    const selectedMake = makeSelect.value;
+    modelSelect.innerHTML = '<option value="">Select Model</option>';
+    if (selectedMake) {
+      const make = carData.makes.find(m => m.name === selectedMake);
+      if (make) {
+        make.models.forEach(model => {
+          const option = document.createElement('option');
+          option.value = model;
+          option.textContent = model;
+          modelSelect.appendChild(option);
+        });
+      }
+    }
+    updateCarName();
+  }
+
+  function updateCarName() {
+    const make = document.getElementById('makeSelect').value;
+    const model = document.getElementById('modelSelect').value;
+    const year = document.getElementById('yearSelect').value;
+    const nameInput = document.getElementById('nameInput');
+    if (make && model) {
+      nameInput.value = `${make} ${model}${year ? ' ' + year : ''}`;
+    } else {
+      nameInput.value = '';
+    }
+  }
+
+  async function autoFillSpecs() {
+    const make = document.getElementById('makeSelect').value;
+    const model = document.getElementById('modelSelect').value;
+    const year = document.getElementById('yearSelect').value;
+    const fuel = document.getElementById('fuelSelect').value;
+
+    if (!make || !model || !year || !fuel) {
+      showToast('Please select Make, Model, Year, and Fuel first.', 'error');
+      return;
+    }
+
+    // Map fuel types to API format
+    const fuelMap = {
+      'Benzin': 'Benzin',
+      'Diesel': 'Diesel',
+      'Hybrid': 'Hybrid',
+      'Elektro': 'Elektro'
+    };
+    const apiFuel = fuelMap[fuel];
+    if (!apiFuel) {
+      showToast('Fuel type not supported for auto-fill.', 'error');
+      return;
+    }
+
+    // Normalize make and model for API
+    const apiMake = make.toLowerCase().replace(/\s+/g, '-');
+    const apiModel = model.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    const url = `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${apiMake}&model=${apiModel}&year=${year}&sold_in_us=1`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.Trims || data.Trims.length === 0) {
+        showToast('No specs found for this combination.', 'error');
+        return;
+      }
+
+      // Find a trim with matching fuel
+      const matchingTrim = data.Trims.find(trim => trim.model_engine_fuel === apiFuel);
+
+      if (!matchingTrim) {
+        showToast('No matching trim found for the selected fuel.', 'error');
+        return;
+      }
+
+      // Fill the fields
+      const engineInput = document.getElementById('engineInput');
+      const powerInput = document.getElementById('powerInput');
+
+      const cc = matchingTrim.model_engine_cc;
+      const cyl = matchingTrim.model_engine_cyl;
+      const kw = matchingTrim.model_engine_power_kw;
+      const ps = matchingTrim.model_engine_power_ps;
+
+      if (cc && cyl) {
+        engineInput.value = `${cc} cm³ · ${cyl} Zyl.`;
+      } else if (apiFuel === 'Elektro') {
+        engineInput.value = 'Electric Motor';
+      } else {
+        engineInput.value = '—';
+      }
+
+      if (kw && ps) {
+        powerInput.value = `${kw} kW (${ps} PS)`;
+      } else {
+        powerInput.value = '—';
+      }
+
+      showToast('Specs auto-filled successfully!');
+    } catch (error) {
+      console.error('Error fetching specs:', error);
+      showToast('Failed to fetch specs. Please try again.', 'error');
+    }
+  }
+
   // ── State ──────────────────────────────────────────────────────────────────
   let selectedFiles = [];
 
@@ -642,6 +1006,9 @@
   function openAddCar() {
     document.getElementById('addCarOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.getElementById('makeSelect').addEventListener('change', onMakeChange);
+    document.getElementById('modelSelect').addEventListener('change', updateCarName);
+    document.getElementById('yearSelect').addEventListener('change', updateCarName);
   }
 
   function closeAddCar() {
@@ -650,6 +1017,10 @@
     document.getElementById('addCarForm').reset();
     selectedFiles = [];
     document.getElementById('previewGrid').innerHTML = '';
+    document.getElementById('makeSelect').removeEventListener('change', onMakeChange);
+    document.getElementById('modelSelect').removeEventListener('change', updateCarName);
+    document.getElementById('yearSelect').removeEventListener('change', updateCarName);
+    document.getElementById('modelSelect').innerHTML = '<option value="">Select Model</option>';
   }
 
   function overlayClick(e) {
@@ -741,6 +1112,7 @@
 
   // ── Auto-login check (try to load bookings; if 401, show login) ───────────
   (async () => {
+    loadCarData();
     const res = await fetch('/admin/api/bookings');
     if (res.ok) showDashboard();
   })();

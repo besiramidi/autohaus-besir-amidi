@@ -457,7 +457,17 @@ const server = http.createServer((req, res) => {
     const imagePaths = [];
     const fileWritePromises = [];
 
-    bb.on('field', (name, val) => { fields[name] = val; });
+    bb.on('field', (name, val) => {
+      if (fields[name]) {
+        if (Array.isArray(fields[name])) {
+          fields[name].push(val);
+        } else {
+          fields[name] = [fields[name], val];
+        }
+      } else {
+        fields[name] = val;
+      }
+    });
 
     bb.on('file', (fieldName, file, info) => {
       const ext      = path.extname(info.filename || '').toLowerCase() || '.jpg';
@@ -479,9 +489,7 @@ const server = http.createServer((req, res) => {
       try {
         await Promise.all(fileWritePromises);
 
-        const features = fields.features
-          ? fields.features.split('\n').map(f => f.trim()).filter(Boolean)
-          : [];
+        const features = Array.isArray(fields.features) ? fields.features : (fields.features ? [fields.features] : []);
 
         const newCar = {
           id:           Date.now(),
@@ -611,6 +619,16 @@ const server = http.createServer((req, res) => {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Server error. Please try again.' }));
       }
+    });
+    return;
+  }
+
+  // ── GET /car_data.json ─────────────────────────────────────────────────────
+  if (req.method === 'GET' && req.url === '/car_data.json') {
+    fs.readFile(path.join(__dirname, 'car_data.json'), (err, data) => {
+      if (err) { res.writeHead(404); res.end('Not found'); return; }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
     });
     return;
   }
