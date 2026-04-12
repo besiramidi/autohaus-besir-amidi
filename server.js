@@ -277,13 +277,13 @@ const server = http.createServer((req, res) => {
           }
           console.log('✅ reCAPTCHA token received, verifying...');
           const captchaResult = await verifyRecaptcha(recaptchaToken);
-          if (!captchaResult.success) {
-            console.log('❌ reCAPTCHA verification failed');
+          if (!captchaResult.success || (captchaResult.score && captchaResult.score < 0.5)) {
+            console.log('❌ reCAPTCHA verification failed - score:', captchaResult.score);
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
             return;
           }
-          console.log('✅ reCAPTCHA verification successful');
+          console.log('✅ reCAPTCHA verification successful - score:', captchaResult.score);
         }
 
         const key = slotKey(date, time, car);
@@ -375,13 +375,13 @@ const server = http.createServer((req, res) => {
           }
           console.log('✅ Admin login: reCAPTCHA token received, verifying...');
           const captchaResult = await verifyRecaptcha(recaptchaToken);
-          if (!captchaResult.success) {
-            console.log('❌ Admin login: reCAPTCHA verification failed');
+          if (!captchaResult.success || (captchaResult.score && captchaResult.score < 0.5)) {
+            console.log('❌ Admin login: reCAPTCHA verification failed - score:', captchaResult.score);
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
             return;
           }
-          console.log('✅ Admin login: reCAPTCHA verification successful');
+          console.log('✅ Admin login: reCAPTCHA verification successful - score:', captchaResult.score);
         }
 
         if (password && password === process.env.ADMIN_PASSWORD) {
@@ -566,13 +566,13 @@ const server = http.createServer((req, res) => {
           }
           console.log('✅ Contact form: reCAPTCHA token received, verifying...');
           const captchaResult = await verifyRecaptcha(recaptchaToken);
-          if (!captchaResult.success) {
-            console.log('❌ Contact form: reCAPTCHA verification failed');
+          if (!captchaResult.success || (captchaResult.score && captchaResult.score < 0.5)) {
+            console.log('❌ Contact form: reCAPTCHA verification failed - score:', captchaResult.score);
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'reCAPTCHA verification failed. Please try again.' }));
             return;
           }
-          console.log('✅ Contact form: reCAPTCHA verification successful');
+          console.log('✅ Contact form: reCAPTCHA verification successful - score:', captchaResult.score);
         }
 
         // Send email notification

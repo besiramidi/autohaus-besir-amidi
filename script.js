@@ -8,18 +8,39 @@ let activeModel = "";
 let currentGalleryIndex = 0;
 let currentGalleryCar = null;
 
+console.log("🚗 script.js loaded successfully");
+
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("🚗 Initializing AutoHaus...");
-  setupNavbar();
-  setupHamburger();
-  setupContactForm();
+  try {
+    setupNavbar();
+    console.log("✅ Navbar setup complete");
+  } catch (e) {
+    console.error("❌ Navbar setup failed:", e);
+  }
+
+  try {
+    setupHamburger();
+    console.log("✅ Hamburger setup complete");
+  } catch (e) {
+    console.error("❌ Hamburger setup failed:", e);
+  }
+
+  try {
+    setupContactForm();
+    console.log("✅ Contact form setup complete");
+  } catch (e) {
+    console.error("❌ Contact form setup failed:", e);
+  }
 
   console.log("📡 Loading cars from API...");
   try {
     const res = await fetch('/api/cars');
+    console.log("📡 API response status:", res.status);
     cars = await res.json();
     console.log("✅ Loaded", cars.length, "cars from API");
+    console.log("📋 First car sample:", cars[0]);
   } catch (error) {
     console.error("❌ Failed to load cars:", error);
     cars = [];
@@ -60,8 +81,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ===== RENDER CARS =====
 function renderCars(list) {
   console.log("🔄 Rendering", list.length, "cars");
+  console.log("🔄 Cars data:", list);
   const grid = document.getElementById("carsGrid");
   const noResults = document.getElementById("noResults");
+
+  console.log("🔄 Grid element:", grid);
+  console.log("🔄 No results element:", noResults);
 
   if (list.length === 0) {
     console.log("⚠️ No cars to display");
@@ -71,29 +96,32 @@ function renderCars(list) {
   }
   noResults.classList.add("hidden");
 
+  // Render cars with full card design
   grid.innerHTML = list.map(car => `
-    <div class="car-card" onclick="openModal(${car.id})">
+    <div class="car-card" data-id="${car.id}" data-make="${car.make}" data-model="${car.model}">
       <div class="car-img-real">
-        <img src="${encodePath(car.thumb)}" alt="${car.name}" loading="lazy" />
-        <span class="car-badge ${car.status}">${badgeLabel(car.status)}</span>
-        <span class="car-photo-count">${car.images.length} photos</span>
+        <img src="${car.thumb}" alt="${car.name}" loading="lazy">
+        <div class="car-badge">${badgeLabel(car.status)}</div>
       </div>
       <div class="car-info">
-        <div class="car-make-tag">${car.make}</div>
-        <h3>${car.year ? car.year + ' ' : ''}${car.name}</h3>
+        <span class="car-make-tag">${car.make}</span>
+        <h3>${car.name}</h3>
         <div class="car-meta">
-          <span>${car.km}</span>
-          <span>${car.power}</span>
-          <span>${car.fuel}</span>
-          <span>${car.transmission}</span>
+          <span><i class="fas fa-calendar"></i> ${car.year}</span>
+          <span><i class="fas fa-tachometer-alt"></i> ${car.km}</span>
+          <span><i class="fas fa-gas-pump"></i> ${car.fuel}</span>
+          <span><i class="fas fa-cogs"></i> ${car.transmission}</span>
         </div>
         <div class="car-price-row">
-          <span class="car-price-poa">Price on Request</span>
-          <button class="btn-details" onclick="event.stopPropagation(); openModal(${car.id})">View Details</button>
+          <span class="car-price-poa">Preis auf Anfrage</span>
+          <button class="btn-primary car-btn" onclick="openBooking('${car.name}')">
+            <i class="fas fa-calendar-check"></i> Termin vereinbaren
+          </button>
         </div>
       </div>
     </div>
   `).join("");
+  console.log("🎨 Full cars rendered");
 }
 
 function badgeLabel(status) {
@@ -412,52 +440,46 @@ function handleFormSubmit(event) {
   const emailOk = cfValidate("email", "err-email",
     v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Please enter a valid email.");
 
-  // Check reCAPTCHA
-  const recaptchaToken = grecaptcha.getResponse();
-  if (!recaptchaToken) {
-    alert("Please complete the reCAPTCHA verification.");
-    return;
-  }
-
   if (!firstOk || !lastOk || !emailOk) return;
 
   const btn = document.getElementById("cfSubmit");
   btn.classList.add("loading");
   btn.disabled = true;
 
-  // Send form data to server
-  const formData = {
-    firstName:  document.getElementById("cfFirstName").value.trim(),
-    lastName:   document.getElementById("cfLastName").value.trim(),
-    email:      document.getElementById("cfEmail").value.trim(),
-    phone:      document.getElementById("cfPhone").value.trim(),
-    interest:   document.getElementById("cfInterest").value,
-    message:    document.getElementById("cfMessage").value.trim(),
-    recaptchaToken: recaptchaToken
-  };
+  // Execute reCAPTCHA v3
+  grecaptcha.execute('6LdE2bMsAAAAAEVWLyHwn693PXnx4C8outYzMUr1', {action: 'contact'}).then(function(token) {
+    // Send form data to server
+    const formData = {
+      firstName:  document.getElementById("cfFirstName").value.trim(),
+      lastName:   document.getElementById("cfLastName").value.trim(),
+      email:      document.getElementById("cfEmail").value.trim(),
+      phone:      document.getElementById("cfPhone").value.trim(),
+      interest:   document.getElementById("cfInterest").value,
+      message:    document.getElementById("cfMessage").value.trim(),
+      recaptchaToken: token
+    };
 
-  fetch("/api/contact", {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(formData)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.ok) {
-      showSuccessState();
-    } else {
-      alert(data.error || "Failed to send message. Please try again.");
+    fetch("/api/contact", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        showSuccessState();
+      } else {
+        alert(data.error || "Failed to send message. Please try again.");
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
+    })
+    .catch(err => {
+      console.error("Contact form error:", err);
+      alert("Connection error. Please try again.");
       btn.classList.remove("loading");
       btn.disabled = false;
-      grecaptcha.reset();
-    }
-  })
-  .catch(err => {
-    console.error("Contact form error:", err);
-    alert("Connection error. Please try again.");
-    btn.classList.remove("loading");
-    btn.disabled = false;
-    grecaptcha.reset();
+    });
   });
 }
 
@@ -492,10 +514,6 @@ function resetContactForm() {
       f.classList.remove("has-error", "is-valid");
     });
     document.querySelectorAll(".cf-error").forEach(e => e.textContent = "");
-    // Reset reCAPTCHA
-    if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.reset();
-    }
   }, 400);
 }
 
@@ -765,6 +783,10 @@ async function submitBooking(event) {
   const email = document.getElementById("bfEmail").value.trim();
   const phone = document.getElementById("bfPhone").value.trim();
 
+  console.log("📝 Booking form submission started");
+  console.log("📝 Form values:", { name, email, phone });
+  console.log("📝 Booking globals:", { bookingCar, bookingDate, bookingTime, bookingTimeDisplay });
+
   // Validate
   let valid = true;
 
@@ -790,68 +812,61 @@ async function submitBooking(event) {
     emailErr.textContent = "";
   }
 
-  // Safe reCAPTCHA handling
-  let recaptchaToken = "";
-  const recaptchaErr = document.getElementById("bfRecaptchaErr");
-  console.log("🔍 Checking reCAPTCHA...");
-  try {
-    if (typeof grecaptcha !== "undefined" && grecaptcha) {
-      recaptchaToken = grecaptcha.getResponse();
-      console.log("🔍 reCAPTCHA token:", recaptchaToken ? "PRESENT" : "EMPTY");
-    } else {
-      console.log("🔍 grecaptcha not loaded");
-    }
-  } catch (error) {
-    console.error("🔍 reCAPTCHA error:", error);
-  }
-
-  if (!recaptchaToken) {
-    console.log("❌ No reCAPTCHA token - user didn't complete reCAPTCHA");
-    recaptchaErr.textContent = "Please complete the reCAPTCHA.";
-    valid = false;
-  } else {
-    console.log("✅ reCAPTCHA token obtained");
-    recaptchaErr.textContent = "";
-  }
-
   if (!valid) return;
 
   const btn = document.getElementById("bfSubmit");
   btn.classList.add("loading");
   btn.disabled = true;
 
-  try {
-    const res  = await fetch("/api/book", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay, recaptchaToken })
-    });
-    const data = await res.json();
+  // Execute reCAPTCHA v3
+  grecaptcha.execute('6LdE2bMsAAAAAEVWLyHwn693PXnx4C8outYzMUr1', {action: 'book'}).then(function(recaptchaToken) {
+  console.log('✅ reCAPTCHA v3 token generated:', recaptchaToken.substring(0, 30) + '...');
 
-    if (res.ok) {
-      const d = new Date(bookingDate + 'T12:00:00');
-      const dateLabel = DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] +
-                        " " + d.getDate() + ", " + d.getFullYear();
-      document.getElementById("bSuccessMsg").textContent =
-        `Your test drive for the ${bookingCar} is set for ${dateLabel}, ${bookingTimeDisplay}.`;
-      document.getElementById("bSuccessEmail").textContent = email;
-      bookingGoTo(4);
-    } else {
-      showToast(data.error || "Booking failed. Please try again.");
+  // Now send the booking request
+  const requestData = { name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay, recaptchaToken };
+
+  fetch("/api/book", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(requestData)
+  })
+    .then(res => {
+      console.log("📥 Booking response status:", res.status, res.statusText);
+      return res.text().then(text => {
+        console.log("📥 Booking response body:", text);
+        try {
+          const data = JSON.parse(text);
+          return { res, data };
+        } catch (e) {
+          console.error("❌ Failed to parse JSON response:", text);
+          return { res, data: { error: "Invalid server response" } };
+        }
+      });
+    })
+    .then(({ res, data }) => {
+      console.log("📥 Parsed booking response:", data);
+      if (res.ok) {
+        const d = new Date(bookingDate + 'T12:00:00');
+        const dateLabel = DAY_NAMES[d.getDay()] + ", " + MONTH_NAMES[d.getMonth()] +
+                          " " + d.getDate() + ", " + d.getFullYear();
+        document.getElementById("bSuccessMsg").textContent =
+          `Your test drive for the ${bookingCar} is set for ${dateLabel}, ${bookingTimeDisplay}.`;
+        document.getElementById("bSuccessEmail").textContent = email;
+        bookingGoTo(4);
+      } else {
+        showToast(data.error || "Booking failed. Please try again.");
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
+    })
+    .catch(err => {
+      console.error("❌ Booking fetch error:", err);
+      console.error("❌ Error details:", err.message, err.stack);
+      showToast("Connection error. Please try again.");
       btn.classList.remove("loading");
       btn.disabled = false;
-      if (typeof grecaptcha !== "undefined" && grecaptcha) {
-        grecaptcha.reset();
-      }
-    }
-  } catch {
-    showToast("Connection error. Please try again.");
-    btn.classList.remove("loading");
-    btn.disabled = false;
-    if (typeof grecaptcha !== "undefined" && grecaptcha) {
-      grecaptcha.reset();
-    }
-  }
+    });
+  }); // end grecaptcha.execute
 }
 
 // Escape key closes booking modal
