@@ -10,11 +10,11 @@ const { Resend } = require('resend');
 require('dotenv').config();
 
 // ── Paths ─────────────────────────────────────────────────────────────────────
-const DATA_DIR        = path.join(__dirname, 'data');
+const DATA_DIR        = process.env.DATA_DIR    || path.join(__dirname, 'data');
+const UPLOADS_DIR     = process.env.UPLOADS_DIR || path.join(__dirname, 'images', 'uploads');
 const CARS_FILE       = path.join(DATA_DIR, 'cars.json');
 const BOOKINGS_FILE   = path.join(DATA_DIR, 'bookings.json');
 const SESSIONS_FILE   = path.join(DATA_DIR, 'sessions.json');
-const UPLOADS_DIR     = path.join(__dirname, 'images', 'uploads');
 
 // Ensure directories exist
 [DATA_DIR, UPLOADS_DIR].forEach(dir => {
