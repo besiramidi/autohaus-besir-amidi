@@ -158,13 +158,35 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { name, email, phone, car, date, time, timeDisplay } = JSON.parse(body);
+        const { name, email, phone, car, date, time, timeDisplay, recaptchaToken } = JSON.parse(body);
         const displayTime = timeDisplay || time;
 
         if (!name || !email || !car || !date || !time) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Missing required fields' }));
           return;
+        }
+
+        // Verify reCAPTCHA v3 token
+        if (process.env.RECAPTCHA_SECRET_KEY) {
+          if (!recaptchaToken) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'reCAPTCHA token missing.' }));
+            return;
+          }
+          const verifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+          });
+          const verifyData = await verifyRes.json();
+          if (!verifyData.success || verifyData.score < 0.5) {
+            console.warn(`reCAPTCHA rejected — success:${verifyData.success} score:${verifyData.score}`);
+            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Security check failed. Please try again.' }));
+            return;
+          }
+          console.log(`reCAPTCHA passed — score: ${verifyData.score}`);
         }
 
         const key = slotKey(date, time);

@@ -965,10 +965,16 @@ async function submitBooking(event) {
   btn.disabled = true;
 
   try {
+    const recaptchaToken = await new Promise(resolve => {
+      grecaptcha.ready(() => {
+        grecaptcha.execute("6LdE2bMsAAAAAEVWLyHwn693PXnx4C8outYzMUr1", { action: "book" }).then(resolve);
+      });
+    });
+
     const res  = await fetch("/api/book", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay })
+      body:    JSON.stringify({ name, email, phone, car: bookingCar, date: bookingDate, time: bookingTime, timeDisplay: bookingTimeDisplay, recaptchaToken })
     });
     const data = await res.json();
 
